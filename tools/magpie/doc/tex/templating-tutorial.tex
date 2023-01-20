@@ -1,0 +1,128 @@
+\chapter{A templating tutorial}
+
+\section{Introduction}
+
+This chapter illustrates the templating language by describing how new Magpie targets may be implemented. In this tutorial, you will first create a new ``null'' target which simply replicates the functionality of an existing target, and then you will make changes to it by adding templates to the target.
+
+\section{A new target}
+As described in Chapter \ref{chapter:templating}, it is useful to use Magpie's generic interface when creating targets, because this interface makes targets and their inheritance relationships explicit. For example, the {\tt generic} interface is called like this:
+
+\begin{verbatim}
+$ magpie.py --output=client --target=idl4_generic_l4v4 test/input/simple.idl4
+\end{verbatim}
+
+The {\tt generic\_biguuid} interface, which inherits from the {\tt generic} interface, is called like this (line split for readability):
+
+\begin{verbatim}
+$ magpie.py --output=client --target=idl4_generic_biguuid_l4v4:idl4_generic_l4v4
+test/input/simple.idl4
+\end{verbatim}
+
+In order to extend the {\tt generic\_biguuid} target further, we will now create an empty target with the intention of modifying some {\tt generic\_biguuid} functionality. In this case the final intention is to add support for the Doxygen automatic documentation system\footnote{Information on Doxygen is available from its homepage, \url{www.doxygen.org/}}.
+
+The first required step is to create a new file in the {\tt targets/} directory. Magpie requires that your new target's filename end with {\tt .target.py}, so something like {\tt doxygen.target.py} is a reasonable name.
+
+Open the file in a text editor and enter the minimum required for a Magpie target, which is shown in Figure\ref{fig:target:null}.
+
+\begin{figure}
+\begin{verbatim}
+Generator = 'v4'
+
+class Templates(OldTemplates):
+        pass
+\end{verbatim}
+\caption{A Magpie null target}
+\label{fig:target:null}
+\end{figure}
+
+If you are familiar with Python, you will recognise the syntax and the {\tt pass} statement. Very little Python knowledge is required to write targets, and it is explained here\footnote{If you are interested in learning more, a good Python tutorial is available at \url{http://www.python.org/doc/current/tut/}.}. In this case, we define the variable {\tt Generator} and set it to the string {\tt 'v4'}. Magpie currently only supports the V4 generator, so this is required. We then define a class named {\tt Templates}, which inherits from a class named {\tt OldTemplates}. In Python, the block structure of the language is determined by indentation, so there is not need to use braces. Empty blocks can be created using a {\tt pass} statement. 
+
+Test the null template by specifying it on the Magpie command line (once again split for readability):
+
+\begin{verbatim}
+$ magpie.py --output=client --target=doxygen:idl4_generic_biguuid_l4v4:
+idl4_generic_l4v4 test/input/simple.idl4
+\end{verbatim}
+
+If you compare the output of this command with the previous one, you should notice no changes. Congratulations! You have created a template that successfully doesn't do anything. The following Sections describe how to customise it.
+
+\section{Adding Doxygen-style comments stubs}
+This section discusses a simple extension that may be performed to the templating language, in order to make the stubs compatible with the C automatic documentation generator Doxygen.. We will use Doxygen's JavaDoc format.
+
+First, create a directory for your new templates. Magpie assumes that all templates are contained in the {\tt output/templates} directory. Create the directory {\tt output/templates/doxygen}.
+
+\subsection{Finding the right template to change}
+Before we can create new templates, it's useful to know what is going to change. In this case, we will be adding a special Doxygen-readable comment right in front of the function signature. The corresponding file mentioned in the generic target file, {\tt targets/idl4\_generic\_l4v4.target.py}, is {\tt client\_function\_wrapper}. This file is reproduced in Figure \ref{fig:tut:clientfunctionwrapper}. 
+
+\begin{figure}
+\begin{verbatim}
+/*-
+ 1 function.rename_args({'fpage': 'idl4_fpage_t'})
+ 2 # The C interface dictates we start with a service pointer and end with environment.
+ 3 call_param_list = ['%s _service' % (interface.get_name())]
+ 4 for param in function.get_call_params():
+ 5         call_param_list.append('%s %s%s' % (param['typename'],
+ 6                         param['special_indirection'], param['name']))
+ 7 call_param_list.append('CORBA_Environment *_env')
+ 8 -*/
+ 9 #if !defined(/*-?function.get_ifdef_name()-*/)
+10 #define /*-?function.get_ifdef_name()-*/
+11 /*-run(templates.get('client_function_create_id'))-*/
+12 static inline /*-?function.get_return_type()-*/ /*-?function.get_name()-*/
+13                 (/*-?', '.join (call_param_list)-*/)
+14 {
+15 /*-run(templates.get('client_function_body'))-*/
+16 }
+17 #endif // !defined(/*-?function.get_ifdef_name()-*/)
+18 \end{verbatim}
+\caption{output/templates/v4\_generic/client\_function\_wrapper.template.c}
+\label{fig:tut:clientfunctionwrapper}
+\end{figure}
+
+This file contains the templated function signature, starting on line 12. Doxygen comments should go immediately before this line. One way to accomplish this is to directly modify this file. A cleaner alternative is to copy the file to your new template directory, preserving the name:
+
+\begin{verbatim}
+$ cp output/templates/v4_generic/client_function_wrapper.template.c
+    output/templates/doxygen/client_function_wrapper.template.c
+\end{verbatim}
+
+Now modify your new target to point to your file. Remove the {\tt pass} line, and insert the following at the same indentation level as {\tt pass}:
+
+\begin{verbatim}
+client_function_wrapper = 'doxygen/client_function_wrapper.template.c'
+\end{verbatim}
+
+Your changed target should now look like that shown in Figure \ref{fig:tut:target:doxygen}. 
+\begin{figure}
+\begin{verbatim}
+Generator = 'v4'
+
+class Templates(OldTemplates):
+        client_function_wrapper = 'doxygen/client_function_wrapper.template.c'
+\end{verbatim}
+\caption{The final Doxygen target}
+\label{fig:tut:target:doxygen}
+\end{figure}
+
+After this change, your new target should still produce output no different to {\tt generic\_biguuid} -- verify this if you like. Now it is time to modify the template to make it support Doxygen. Open the template file in a text editor and insert a blank line immediately before the function definition on line 12. Enter the following lines:
+
+\begin{verbatim}
+/**
+ * Client stub for function /*-?function.get_name()-*/
+*/
+\end{verbatim}
+
+This simple comment doesn't provide a lot of useful information about the function, but it's a start. Test this code if you like and verify that the new output includes your additional lines. You may then like to make additional changes. Figure \ref{fig.templating.tutorial.doxygen.function} shows the completed changes, which list the direction and name of each function parameter.
+\begin{figure}
+\begin{verbatim}
+/**
+ * Client stub for function {*-?function.get_name()-*}
+{*LOOP param = function.get_call_params()*} * @param[{*-?param['direction']-*}]
+{*-?param['name']-*} 
+{*ENDLOOP*}
+*/
+\end{verbatim}
+\caption{Doxygen-style comments for a client stub function template.}
+\label{fig.templating.tutorial.doxygen.function}
+\end{figure}
+

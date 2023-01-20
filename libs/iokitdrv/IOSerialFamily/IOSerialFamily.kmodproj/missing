@@ -1,0 +1,25 @@
+b_to_q
+clalloc
+clfree
+gPESerialBaud
+kauth_cred_get
+linesw
+microuptime
+nulldev
+q_to_b
+suser
+termioschars
+thread_funnel_set
+thread_funnel_set' follo
+tk_nin
+tk_rawcc
+tsleep
+ttioctl
+ttsetwater
+ttspeedtab
+ttwakeup
+ttyclose
+ttyflush
+ttyinput
+ttyselect
+wakeup

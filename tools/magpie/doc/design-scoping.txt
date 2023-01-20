@@ -1,0 +1,96 @@
+Scoping in Magpie
+
+A new scope is opened:
+	- Whenever a new file is read (this is "module scope")
+	- with every {  (including "namespace {")
+	- In for() loop defns [  for (int i=0; i< 10; i++) ]
+
+The current scope is closed:
+	- with }
+	- At the end of the for loop (two scopes closed here)
+
+"using" declarations add an alias to the current scope level for another
+scope level.
+
+Scopes
+~~~~~~
+- File scope
+- Function scope (the only thing that goes at function scope are labels)
+- Block scope
+- Function prototype scope
+
+
+Scopes are searched:
+From the "current" down to the root.
+Relative scopes?
+Then from the root up again.
+When examining a level, first all the non-aliases are searched, then the aliases are searched (so direct declaration trumps reference via "using")
+
+
+- Base
+  - std
+  - file scopes
+
+We have the "base scope" where all built-ins are defined: this is where the builtin types go. std is there too because it's ansi c++. Then we have file scopes.
+
+
+Design, then:
+
+- Remove all references to special parser-specific scope classes (Symbols in cparser, ParserLexerState in idlparser). Replace with a Scope class.
+- The Scope class contains the type registry and manages access to it.
+- Scope class data structure:
+	- Type registry for this scope level
+	- scope aliases in this level
+	- Child scopes in this level
+- Child scopes are implemented as a dictionary of names. Many scopes are unnamed. These scopes are assigned a unique ID.
+
+Notes written during progress report meeting dec 13
+~~~~~~~~~~~~~~~~
+
+Scoping is required:
+	- During parsing
+		[x] of C++
+		[x] of IDL
+    - [ ] during code generation. Not used in Magpie (yet).
+Things to scope
+	- [ ] "regular" (stack) variables
+	- [x] constants. Same class as regular vars
+	- [x] typedefs (involves type registry)
+	- [x] enums, unions, classes (involves type registry)
+
+C++ and IDL scope tree is shared.
+
+We are conceptually parsing one file. So scope tree is:
+- built-ins
+  - file scope (iguana.idl4)
+
+File scope is passed as "current scope" to c++ parser
+
+c++ parser must be called with "final parse" bool & only add scope if final.
+
+At end of relevant construct:
+	- close scope
+	- add relevant things to current scope
+
+* Scope list is a stack, not a child-parent relationship (this is so we can
+  support namespaces)
+* File scope is just an anonymous namespace
+* Check that we never leave file scope (assert) and that after the parse
+  we are back at file scope(assert)
+
+Scope class:
+1. push_and_enter()
+2. pop()
+3. add_namespace_alias()
+4. add_type_instance()
+5. add_type_alias()
+6. add_type()
+7. get_*()
+
+Notes:
+1. Might need a list of names, some of which can be None (== anonymous namespace)
+3. Supports the c++ "using" directive. Hopefully not used in headers we're parsing.
+4. Used to add eg "int i;" and also constants such as "const int num_iterators = 10;"
+7. More thought required?
+8. Can be passed directly to registry...
+

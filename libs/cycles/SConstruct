@@ -1,0 +1,7 @@
+Import("*")
+import os
+
+public_headers = ["#libs/cycles/arch_include/%s" % env.arch]
+
+lib = (public_headers, None, None, [], [])
+Return("lib")

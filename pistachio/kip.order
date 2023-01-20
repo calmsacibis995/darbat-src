@@ -1,0 +1,24 @@
+# Mach-O KIP order file
+kernelinterface.o:_kip
+user.o:_user_ipc
+user.o:_entry_ipc
+user.o:_user_lipc
+user.o:_entry_lipc
+user.o:_user_exchange_registers
+user.o:_entry_exchange_registers
+user.o:_user_thread_control
+user.o:_entry_thread_control
+user.o:_user_system_clock
+user.o:_entry_system_clock
+user.o:_user_thread_switch
+user.o:_entry_thread_switch
+user.o:_user_schedule
+user.o:_entry_schedule
+user.o:_user_unmap
+user.o:_entry_unmap
+user.o:_user_space_control
+user.o:_entry_space_control
+user.o:_user_processor_control
+user.o:_entry_processor_control
+user.o:_user_memory_control
+user.o:_entry_memory_control

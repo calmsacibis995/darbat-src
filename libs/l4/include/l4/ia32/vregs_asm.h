@@ -1,0 +1,21 @@
+# Location of TCRs within UTCB.
+# Note: Keep up to date with vregs.h
+
+#define __L4_TCR_PREEMPTED_IP			(-3)
+#define __L4_TCR_PREEMPT_CALLBACK_IP		(-4)
+#define __L4_TCR_VIRTUAL_ACTUAL_SENDER		(-5)
+#define __L4_TCR_INTENDED_RECEIVER		(-6)
+#define __L4_TCR_ERROR_CODE			(-7)
+#define __L4_TCR_PREEMPT_FLAGS			(-8)
+#define __L4_TCR_COP_FLAGS			(-8)
+#define __L4_TCR_EXCEPTION_HANDLER		(-9)
+#define __L4_TCR_PAGER				(-10)
+#define __L4_TCR_USER_DEFINED_HANDLE		(-11)
+#define __L4_TCR_PROCESSOR_NO			(-12)
+#define __L4_TCR_ACCEPTOR			(-13)
+#define __L4_TCR_NOTIFY_BITS			(-14)
+#define __L4_TCR_NOTIFY_MASK			(-15)
+#define __L4_TCR_MY_GLOBAL_ID			(-16)
+#define __L4_TCR_THREAD_WORD_0			(-17)
+#define __L4_TCR_THREAD_WORD_1			(-18)
+#define __L4_TCR_PLAT_TLS			(-19)

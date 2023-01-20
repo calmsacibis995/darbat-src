@@ -1,0 +1,602 @@
+"""
+Main darbat SConstruct file.
+Sets up the build for both osfmk and bsd, with appropriate options.
+"""
+Import("*")
+
+#### Generic defines
+
+video_console = args.get("video_console", 0 )
+
+# The wonders of the new buils system
+default_includes = [ "#libs/c/include", "#libs/c/arch_include/ia32",
+                     "#libs/l4/include", "#libs/elf/include",
+                     "#libs/l4e/include", "#libs/iguana/include",
+                     "#libs/naming/include",
+                     ]
+
+# cflags
+ccflags = [ "-fno-builtin-log",
+            "-fno-builtin-fork",
+            "-fno-builtin-exit",
+            "-fno-builtin-putchar",
+            "-fno-strict-aliasing",
+            "-falign-functions=32",
+            "-Wno-pointer-sign",
+            "-Wall",
+            "-Werror"
+            ]
+
+
+#### libmachvm Library
+
+lmv_files = []
+lmv_files += src_glob("igcompat/machvm/*.c")
+lmv_files += src_glob("igcompat/machvm/default_pager/*.c")
+# lmv_files += src_glob("igcompat/task/*.c")
+lmv_files += src_glob("igcompat/thread/state.c")
+lmv_files += src_glob("igcompat/thread/thread.c")
+
+# L4 arch files
+lmv_files += src_glob("osfmk/l4/*.c")
+lmv_files += src_glob("osfmk/l4/*.S")
+
+# random files
+random_files = [ "bsd/dev/random/randomdev.c",
+	"bsd/dev/random/YarrowCoreLib/port/smf.c",
+	"bsd/dev/random/YarrowCoreLib/src/comp.c",
+	"bsd/dev/random/YarrowCoreLib/src/prng.c",
+	"bsd/dev/random/YarrowCoreLib/src/sha1mod.c",
+	"bsd/dev/random/YarrowCoreLib/src/yarrowUtils.c"]
+
+
+# More mach files
+lmv_files += src_glob("osfmk/kern/task.c")
+lmv_files += src_glob("osfmk/kern/thread.c")
+lmv_files += src_glob("osfmk/kern/timer.c")
+lmv_files += src_glob("osfmk/kern/bsd_kern.c")
+lmv_files += src_glob("osfmk/kern/startup.c")
+lmv_files += src_glob("osfmk/kern/machine.c")
+lmv_files += src_glob("osfmk/kern/locks.c")
+lmv_files += src_glob("osfmk/kern/sched_prim.c")
+lmv_files += src_glob("osfmk/kern/sched_average.c")
+lmv_files += src_glob("osfmk/kern/wait_queue.c")
+lmv_files += src_glob("osfmk/kern/processor.c")
+lmv_files += src_glob("osfmk/kern/ast.c")
+lmv_files += src_glob("osfmk/kern/zalloc.c")
+lmv_files += src_glob("osfmk/kern/kalloc.c")
+lmv_files += src_glob("osfmk/kern/sync_sema.c")
+lmv_files += src_glob("osfmk/kern/sync_lock.c")
+lmv_files += src_glob("osfmk/kern/mk_timer.c")
+lmv_files += src_glob("osfmk/kern/timer_call.c")
+lmv_files += src_glob("osfmk/kern/processor_data.c")
+lmv_files += src_glob("osfmk/kern/kmod.c")
+lmv_files += src_glob("osfmk/kern/clock.c")
+lmv_files += src_glob("osfmk/kern/ledger.c")
+lmv_files += src_glob("osfmk/kern/stack.c")
+lmv_files += src_glob("osfmk/kern/priority.c")
+lmv_files += src_glob("osfmk/kern/thread_call.c")
+lmv_files += src_glob("osfmk/kern/thread_act.c")
+lmv_files += src_glob("osfmk/kern/thread_policy.c")
+
+# Device?
+lmv_files += src_glob("osfmk/device/device_init.c")
+
+# teehee, IPC :)
+
+lmv_files += src_glob("osfmk/kern/host_notify.c")
+lmv_files += src_glob("osfmk/kern/host.c")
+lmv_files += src_glob("osfmk/kern/ipc_host.c")
+lmv_files += src_glob("osfmk/kern/ipc_kobject.c")
+lmv_files += src_glob("osfmk/kern/ipc_tt.c")
+lmv_files += src_glob("osfmk/kern/ipc_sync.c")
+
+# Mach VM
+lmv_files += src_glob("osfmk/vm/vm_init.c")
+lmv_files += src_glob("osfmk/vm/task_working_set.c")
+lmv_files += src_glob("osfmk/vm/vm_shared_memory_server.c")
+
+# Dodgey arch stuff
+lmv_files += src_glob("osfmk/i386/locks_i386.c")
+
+# Commpage stuff
+lmv_files += src_glob("osfmk/i386/commpage/commpage.c")
+lmv_files += src_glob("osfmk/i386/commpage/atomic.S")
+lmv_files += src_glob("osfmk/i386/commpage/spinlock.S")
+lmv_files += src_glob("osfmk/i386/commpage/commpage_mach_absolute_time.S")
+lmv_files += src_glob("osfmk/i386/commpage/commpage_gettimeofday.S")
+lmv_files += src_glob("osfmk/i386/commpage/pthreads.S")
+lmv_files += src_glob("osfmk/i386/commpage/spinlocks.S")
+lmv_files += src_glob("osfmk/i386/commpage/cacheflush.S")
+lmv_files += src_glob("osfmk/i386/commpage/bzero_scalar.S")
+lmv_files += src_glob("osfmk/i386/commpage/bcopy_scalar.S")
+
+# ASM
+lmv_files += src_glob("osfmk/l4/i386/lock.S")
+lmv_files += src_glob("osfmk/l4/i386/asmfunc.S")
+
+# Syscalls
+lmv_files += src_glob("osfmk/kern/syscall_sw.c")
+lmv_files += src_glob("osfmk/kern/syscall_subr.c")
+lmv_files += src_glob("osfmk/ipc/ipc_entry.c")
+lmv_files += src_glob("osfmk/ipc/ipc_hash.c")
+lmv_files += src_glob("osfmk/ipc/ipc_init.c")
+lmv_files += src_glob("osfmk/ipc/ipc_kmsg.c")
+lmv_files += src_glob("osfmk/ipc/ipc_mqueue.c")
+#lmv_files += src_glob("osfmk/ipc/ipc_notify.c")
+lmv_files += src_glob("osfmk/ipc/ipc_object.c")
+lmv_files += src_glob("osfmk/ipc/ipc_port.c")
+lmv_files += src_glob("osfmk/ipc/ipc_pset.c")
+lmv_files += src_glob("osfmk/ipc/ipc_right.c")
+lmv_files += src_glob("osfmk/ipc/ipc_space.c")
+lmv_files += src_glob("osfmk/ipc/ipc_splay.c")
+lmv_files += src_glob("osfmk/ipc/ipc_table.c")
+lmv_files += src_glob("osfmk/ipc/mach_debug.c")
+lmv_files += src_glob("osfmk/ipc/mach_msg.c")
+lmv_files += src_glob("osfmk/ipc/mach_port.c")
+lmv_files += src_glob("osfmk/ipc/mig_log.c")
+
+# MIG stuff
+lmv_files += src_glob("osfmk/mach/clock_priv_server.c")
+lmv_files += src_glob("osfmk/mach/clock_server.c")
+lmv_files += src_glob("osfmk/mach/exc_server.c")
+lmv_files += src_glob("osfmk/mach/host_priv_server.c")
+lmv_files += src_glob("osfmk/mach/host_security_server.c")
+lmv_files += src_glob("osfmk/mach/ledger_server.c")
+lmv_files += src_glob("osfmk/mach/lock_set_server.c")
+lmv_files += src_glob("osfmk/mach/mach_host_server.c")
+lmv_files += src_glob("osfmk/mach/mach_notify_server.c")
+lmv_files += src_glob("osfmk/mach/mach_port_server.c")
+lmv_files += src_glob("osfmk/mach/mach_vm_server.c")
+lmv_files += src_glob("osfmk/mach/memory_object_control_server.c")
+lmv_files += src_glob("osfmk/mach/memory_object_default_server.c")
+lmv_files += src_glob("osfmk/mach/memory_object_name_server.c")
+lmv_files += src_glob("osfmk/mach/memory_object_server.c")
+lmv_files += src_glob("osfmk/mach/processor_server.c")
+lmv_files += src_glob("osfmk/mach/processor_set_server.c")
+lmv_files += src_glob("osfmk/mach/semaphore_server.c")
+lmv_files += src_glob("osfmk/mach/task_server.c")
+lmv_files += src_glob("osfmk/mach/thread_act_server.c")
+lmv_files += src_glob("osfmk/mach/upl_server.c")
+lmv_files += src_glob("osfmk/mach/vm_map_server.c")
+
+# Clock/AT386
+lmv_files += src_glob("osfmk/l4/i386/AT386/conf.c")
+lmv_files += src_glob("osfmk/l4/i386/AT386/bbclock.c")
+lmv_files += src_glob("osfmk/l4/i386/rtclock.c")
+lmv_files += src_glob("osfmk/l4/i386/mp.c")
+lmv_files += src_glob("osfmk/l4/i386/cpuid.c")
+lmv_files += src_glob("osfmk/kern/ipc_clock.c")
+lmv_files += src_glob("osfmk/kern/mach_clock.c")
+lmv_files += src_glob("osfmk/mach/clock_reply_user.c")
+
+# osfmk text console
+# XXX: should this live in xnuglue, or in darbat?
+lmv_files += src_glob("osfmk/console/i386/*.S")
+#lmv_files += src_glob("osfmk/console/i386/text_console.c")
+lmv_files += src_glob("osfmk/console/video_console.c")
+lmv_files += src_glob("osfmk/console/i386/video_scroll.c")
+#lmv_files += src_glob("osfmk/console/iso_font.c")
+
+# Sysctl
+lmv_files += src_glob("osfmk/l4/i386/machine_routines.c")
+
+lmv_templdefines = [ "ARCH_PRIVATE", "KERNEL", "_KERNEL_BUILD",
+                     "KERNEL_PRIVATE", "MACH_KERNEL", "MACH_KERNEL_PRIVATE",
+                     "__APPLE__", "XNU_KERNEL_PRIVATE", "NeXT", "APPLE",
+                     "DRIVER_PRIVATE", "PRIVATE", "__APPLE_API_PRIVATE",
+                     "MACH_BSD"]
+
+# don't do if not elf
+if env.toolchain_name == "gnuelf":
+    lmv_templdefines += ["__NO_UNDERSCORES__"]
+
+lmv_cppdefines = [ ("__LITTLE_ENDIAN__", 1),
+               ("__BIG_ENDIAN__", 0),
+             # ("__PPC__", 0),
+               ("DARBAT", 1),  # to make commenting out obvious
+               ("BAD_OPTIMIZATION", 0),  # teehee
+               ("EXTRA_ASSERTIONS", 1),
+               ("MACH_PAGE_HASH_STATS", 1),  # What should this be?
+               ("DIPC", 0),  # IPC debug?
+               ("__DARWIN_UNIX03", 0),     # Is this right?
+               ("NOTFB31", 1),
+               ("XPR_DEBUG", 0),           # Silent trace buffer
+               ("KDEBUG", 0),              # Do we want this?
+               ("MCMSG", 0),
+               ("notyet", 0),
+               ("mig_internal", 0),        # Erk
+               ("LOCK_DEBUG", 0),
+               ("MUTEX_DEBUG", 0),
+               ("XK_PROXY", 0),
+               ("MACH_HOST", 0),   # This came form using mig headers instead of igcompat
+               ("MP_DEBUG", 0), # TGB
+               ("NCPUS", 1), # TGB
+               ("DEBUG", 1), # glee: darbat/igcompat/machvm/bsd_vm.c
+               ("VID_DEFAULT", video_console ),
+               ] + lmv_templdefines
+
+if env.toolchain_name != "apple":
+# XXX: get rid of this once we really switch to Apple compiler.
+# FIXME: best place? see URL
+    lmv_cppdefines += [("__private_extern__", "")] 
+
+
+# XXX: We have an order dependent directory first so we can
+# do some overrides.
+lmv_cpppath = default_includes + [ "./igcompat/first", 
+            "./osfmk",
+            "./osfmk/vm",
+            "./osfmk/mach",
+            "./osfmk/console",
+            "./bsd", 
+            "./EXTERNAL_HEADERS",
+            "./libkern",
+            "./pexpert",
+            "./igcompat",
+            "./igcompat/mach_missing",
+            "./igcompat/machvm" ]
+
+
+lmv_objs = []
+for lmv_file in lmv_files:
+    lmv_objs.append(env.Object(lmv_file,
+                               CPPPATH=lmv_cpppath,
+                               CPPDEFINES=lmv_cppdefines,
+                               CCFLAGS=env['CCFLAGS'] + ccflags ))
+
+#### Main BSD Kernel part
+
+# Taken from bsd/conf/files
+net_files = [ "bsd/net/if.c",
+              "bsd/net/init.c", 
+              "bsd/net/dlil.c", 
+              "bsd/net/ether_if_module.c", 
+              "bsd/net/ether_at_pr_module.c", 
+              "bsd/net/ether_inet_pr_module.c", 
+              "bsd/net/ether_inet6_pr_module.c", 
+              "bsd/net/if_loop.c", 
+              "bsd/net/multicast_list.c", 
+              "bsd/net/ndrv.c", 
+              "bsd/net/radix.c", 
+              "bsd/net/raw_cb.c", 
+              "bsd/net/raw_usrreq.c", 
+              "bsd/net/route.c", 
+              "bsd/net/rtsock.c", 
+              "bsd/net/kpi_interface.c", 
+              "bsd/net/kpi_protocol.c", 
+              "bsd/net/kpi_interfacefilter.c",
+              "bsd/net/bpf.c",         # optional bpfilter
+              "bsd/net/bpf_filter.c",  # optional bpfilter
+              "bsd/net/net_osdep.c",   # optional ipsec, inet6
+              ]
+
+bsdlibkern_files = ["bsd/libkern/random.c"]
+ntop_files = ["bsd/libkern/inet_ntop.c"]
+
+libkern_files = [
+	"libkern/i386/OSAtomic.S", 
+	"libkern/gen/OSAtomicOperations.c"]
+
+# ipsec stuff
+netkey_files = src_glob("bsd/netkey/*.c")
+
+msdosfs_files = [
+    "msdosfs/msdosfs.kextproj/msdosfs.kmodproj/*.c"
+]
+
+ffs_files = [
+    "bsd/ufs/ffs/ffs_alloc.c",
+    "bsd/ufs/ffs/ffs_balloc.c",
+    "bsd/ufs/ffs/ffs_inode.c",
+    "bsd/ufs/ffs/ffs_subr.c",
+    "bsd/ufs/ffs/ffs_tables.c",
+    "bsd/ufs/ffs/ffs_vfsops.c",
+    "bsd/ufs/ffs/ffs_vnops.c",
+    "bsd/ufs/ufs/ufs_byte_order.c",
+    "bsd/ufs/ufs/ufs_attrlist.c",
+    "bsd/ufs/ufs/ufs_bmap.c",
+    "bsd/ufs/ufs/ufs_ihash.c",
+    "bsd/ufs/ufs/ufs_inode.c",
+    "bsd/ufs/ufs/ufs_lookup.c",
+    "bsd/ufs/ufs/ufs_vfsops.c",
+    "bsd/ufs/ufs/ufs_vnops.c",
+]
+
+hfs_files = [
+    "bsd/hfs/hfs_attrlist.c",
+    "bsd/hfs/hfs_btreeio.c",
+    "bsd/hfs/hfs_catalog.c",
+    "bsd/hfs/hfs_chash.c",
+    "bsd/hfs/hfs_cnode.c",
+    "bsd/hfs/hfs_encodinghint.c",
+    "bsd/hfs/hfs_encodings.c",
+    "bsd/hfs/hfs_endian.c",
+    "bsd/hfs/hfs_hotfiles.c",
+    "bsd/hfs/hfs_link.c",
+    "bsd/hfs/hfs_lookup.c",
+    "bsd/hfs/hfs_notification.c",
+    "bsd/hfs/hfs_quota.c",  # Optional quota
+    "bsd/hfs/hfs_readwrite.c",
+    "bsd/hfs/hfs_search.c",
+    "bsd/hfs/hfs_vfsops.c",
+    "bsd/hfs/hfs_vfsutils.c",
+    "bsd/hfs/hfs_vnops.c",
+    "bsd/hfs/hfs_xattr.c",
+    "bsd/hfs/MacOSStubs.c",
+    "bsd/hfs/rangelist.c",
+    "bsd/hfs/hfscommon/BTree/BTree.c",
+    "bsd/hfs/hfscommon/BTree/BTreeAllocate.c",
+    "bsd/hfs/hfscommon/BTree/BTreeMiscOps.c",
+    "bsd/hfs/hfscommon/BTree/BTreeNodeOps.c",
+    "bsd/hfs/hfscommon/BTree/BTreeNodeReserve.c",
+    "bsd/hfs/hfscommon/BTree/BTreeScanner.c",
+    "bsd/hfs/hfscommon/BTree/BTreeTreeOps.c",
+    "bsd/hfs/hfscommon/Catalog/CatalogUtilities.c",
+    "bsd/hfs/hfscommon/Catalog/FileIDsServices.c",
+    "bsd/hfs/hfscommon/Misc/BTreeWrapper.c",
+    "bsd/hfs/hfscommon/Misc/FileExtentMapping.c",
+    "bsd/hfs/hfscommon/Misc/VolumeAllocation.c",
+    "bsd/hfs/hfscommon/Unicode/UnicodeWrappers.c"
+    ]
+
+# Build the file list
+files = []
+files += src_glob("bsd/kern/*.c")
+files += src_glob("bsd/conf/*.c")
+files += src_glob("bsd/dev/*.c")
+files += src_glob("bsd/vfs/*.c")
+files += src_glob("bsd/nfs/*.c")
+files += src_glob("bsd/netinet/*.c")
+files += src_glob("bsd/netinet6/*.c")
+files += src_glob("bsd/vm/*.c")
+files += net_files
+files += netkey_files
+files += src_glob("bsd/miscfs/deadfs/dead_vnops.c")
+files += src_glob("bsd/miscfs/specfs/spec_vnops.c")
+#files += src_glob("bsd/miscfs/nullfs/*.c")
+files += src_glob("bsd/miscfs/fifofs/*.c")
+files += src_glob("bsd/miscfs/union/*.c")
+files += src_glob("bsd/miscfs/fdesc/*.c")
+files += src_glob("bsd/miscfs/devfs/*.c")
+files += src_glob("bsd/miscfs/volfs/*.c")
+files += msdosfs_files
+files += ffs_files
+files += hfs_files
+# this is the prng, disabled for now, see igcompat/src/hacks.c
+#files += random_files
+#files += bsdlibkern_files
+files += ntop_files
+files += libkern_files
+files += src_glob("igcompat/src/*.c")
+files += src_glob("igcompat/src/iokit/*.c")
+
+# Pull these in for now...
+files += src_glob("bsd/dev/i386/conf.c")  # XXX: ew?
+files += src_glob("bsd/dev/i386/mem.c")  # XXX: ew?
+files += src_glob("bsd/dev/i386/cons.c")  # XXX: ew?
+files += src_glob("bsd/dev/i386/km.c")  # XXX: ew?
+files += src_glob("bsd/dev/i386/kern_machdep.c")  # XXX: ew?
+files += src_glob("bsd/dev/i386/sysctl.c") 
+files += src_glob("igcompat/thread/bsd.c") # for rvals and stuff
+
+
+# print files
+
+# For when we can tease apart the header files
+# cpppath = ["./bsd", "./EXTERNAL_HEADERS", "./osfinc"]
+
+cpppath = [ "./bsd", "./EXTERNAL_HEADERS",
+            "./osfmk", "./libkern",
+            "./igcompat",
+            "./igcompat/mach_missing",
+            "./igcompat/machvm"  ]  # XXX: machvm pants
+
+# KERNEL_BUILD
+templdefines = [ "ARCH_PRIVATE", "KERNEL", "_KERNEL_BUILD",
+                 "BSD_BUILD", "BSD_KERNEL_PRIVATE",
+                 "KERNEL_PRIVATE", "MACH_KERNEL", # "MACH_KERNEL_PRIVATE",
+                 "__APPLE__", "XNU_KERNEL_PRIVATE", "NeXT", "APPLE",
+                 "DRIVER_PRIVATE", "PRIVATE", "__APPLE_API_PRIVATE" ]
+
+# __private_extern__ is a bit dodgey. currently we hope that it's not a problem
+# if only using BSD
+# http://developer.apple.com/documentation/DeveloperTools/Conceptual/CppRuntimeEnv/Articles/SymbolVisibility.html
+
+igoptions = [ ("BSD_VSPRINTF", 0),
+               ] 
+# Define this to 1 if you want to use L4Serial instead of the IOKit serial.
+igoptions += [ ("L4SERIAL", 0) ]
+igoptions += [ ("L4_KDB_ECHO", 1) ]
+
+net_defines = [
+               ("IPDIVERT_44", 1),
+               ("IPXIP", 0),
+               ("__FreeBSD_version", 0), # NFI about this, but the thing needed for >= 500034 isn't defined
+               ("DEBUG_INACTIVE_RULES", 0),
+               ("ICMP_BANDLIM", 1),
+               ("ICMPPRINTFS", 0),
+               ("DEBUG_MTUDISC", 0),
+               ("IPFIREWALL_FORWARD", 0),
+               ("IPSTEALTH", 0),
+               ("NSIP", 0),
+               ("IPFW_DEBUG", 0),
+               ("IPFW2", 1),
+               ("IPSEC_ESP", 1),
+               ("IPSEC_DEBUG", 0),
+	       ("IPSEC_DOSEQCHECK", 0),
+               ("IPFIREWALL_FORWARD_DEBUG", 0),
+               ("SCOPEDROUTING", 0),
+               ("MULTI_SCOPE", 1),
+	       ("DUMMYNET", 1),
+               ("ENABLE_DEFAULT_SCOPE", 1),
+               ("COMPAT_RFC1883", 0),
+               ("ND6_DEBUG", 0),
+               ("IFT_IEEE80211", 0), # This looks like it should be there somewhere
+               ("HAVE_NRL_INPCB", 0),
+               ("IFT_BRIDGE", 0),
+               ("IP6_AUTO_LINKLOCAL", 0),
+               ("IFT_DUMMY", 0), # This looks like it needs to be defined
+                                     # as it is used in bsd/net/if_dummy.c
+               ("GATEWAY6", 0),
+               ("MRT6DEBUG", 0),
+               ("RTF_CLONED", 0)
+               ]
+
+cppdefines = net_defines + [ ("__LITTLE_ENDIAN__", 1),
+               ("__BIG_ENDIAN__", 0),
+               ("DARBAT", 1),  # to make commenting out obvious
+
+               
+               ("SENDFILE", 0),
+               ("COMPAT_GETFSSTAT", 0),
+               ("REV_ENDIAN_FS", 1),
+               ("QUOTA", 1),               # HFS seems to rely on this?
+               ("DIAGNOSTIC", 0),          # With QUOTA turned on,
+                                           # UFS wants this
+               ("NFSSERVER", 1),
+               #("MACH_ASSERT", 0),         # Only really used in osfmk
+               ("SIGNAL_DEBUG", 0),
+               ("NOT_USED", 0),
+               ("notyet", 0),
+               ("IPDIVERT", 1),
+               ("BLUE_DEBUG", 0),
+               ("RANDOM_IP_ID", 1),
+               ("KPROF", 0),
+               ("PIPE_SYSCTLS", 0),        # Doesn't like it
+               ("NETAT", 0),
+               ("STACK_GROWTH_UP", 0),
+               ("LP64_DEBUG", 0),
+               ("LP64KERN", 1),
+               ("KTRACE", 1),
+               ("TRACE", 0),               # vfs_bio doesn't like it
+               ("NCPUS", 1),
+               ("NFSKERB", 0),             # Must not define
+               ("FIFO", 1),
+               ("FIXME", 0),               # I guess turn them off?
+               ("DEAD_CODE", 0),           # Dead in OSX, apparently
+               ("__DARWIN_UNIX03", 0),     # Is this right?
+               ("KDEBUG", 0),              # Do we want this?
+               ("DEBUG", 0),               # only in mach (?)
+               ("COMPAT_43", 0),           # disable, but could use later?
+               ("COMPAT_43_SOCKET", 1),    # Seems to be required in uipc_syscalls
+               ("COMPAT_43_TTY", 0),       # sames
+               ("NOTFB31", 1),
+
+               # These are for the sysctl_init.c file
+               ("TUN", 0),
+               #("IPCTL_DEFMTU", 4),        # This is beirdo
+               ("IPCTL_DEFMTU", 0),        # This is beirdo
+               ("NGIF", 0),
+               ("IPFIREWALL", 0),
+               ("TCP_DROP_SYNFIN", 0),
+               ("TCPDEBUG", 0),
+               ("BRIDGE", 0),
+               ("NETMIBS", 0),
+               ("VLAN", 0),
+               ("IPSEC", 1),
+
+
+               # domains in uipc_domain.c - what should these be?
+               ("NS", 0),	# netware
+               ("ISO", 0),
+               ("CCITT", 0),	# seems to be fddi 
+
+               # defines used in vfs
+               ("HFS_DIAGNOSTIC", 0),
+               ("BALANCE_QUEUES", 0),    # leave this off - vfs_bio.c
+               ("FLUSH_QUEUES", 0),      # leave this off, too - vfs_bio.c
+               
+               # File systems to import
+               ("DEVFS", 1),               # Just testing...
+               ("NFSCLIENT", 1),           # When we get a driver...
+               ("NFSETHER", 0),           # When we get a driver...
+               ("NETHER", 0),           # When we get a driver...
+               ("NATM", 0),           # When we get a driver...
+               ("FFS", 1),                 # For a root disk
+               ("HFS", 1),                 # Nov 1 Demo
+               ("CD9660", 0),
+               ("MFS", 0),
+               ("AFS", 0),
+               ("NULLFS", 0),
+               ("UNION", 1),		# launchd
+               ("FDESC", 1),		# launchd
+               ("VOLFS", 1),            # launchd?
+
+               # For i386 dev config
+               ("NVOL", 0),
+               ("NPTY", 32),
+
+               # Defines used in net/
+               ("NBPFILTER", 16),     # Random guess
+               ("BPF_ALIGN", 0),
+	       ("LOOP", 1),
+               ("NLOOP", 1),         # no. loopback devices
+               ("NVLAN", 0),
+               ("LLC", 0),
+               ("IPV6FIREWALL", 0),
+               ("IF_CLONE_LIST", 0),
+               ("INET", 1),
+               ("INET6", 1),               # needed for ether_inet6_pr_module.c
+               ("BSD310", 0),
+               ("NDUMMY", 0),
+               ("IPX", 0),
+               ("NDRV_DEBUG", 0),
+               ("UPCALL_TIMING", 0),
+               ("MROUTING", 1),
+	       ("ROUTING", 1),
+               ("MROUTE_LKM", 0),
+               ("IGMP_DEBUG", 0),
+               ("DIRECT_PROTO_INPUT", 1),  # See net/kpi_protocol.c
+               ("mig_internal", 0),        # Erk
+               ("IPFIREWALL_DEFAULT_TO_ACCEPT", 1),
+
+
+               # prng
+               ("TARGET_API_MAC_OSX", 0),
+               ("TARGET_API_MAC_CARBON", 0),
+               ("KERNEL_BUILD", 1),
+
+               # Video console default
+               ("VID_DEFAULT", video_console ),
+
+               ] + templdefines + igoptions
+
+if env.toolchain_name != "apple":
+    cppdefines += [("__private_extern__", "")] # FIXME: best place? see URL
+
+if env.toolchain_name == "apple":
+# XXX: Yuck. -gl
+    cppdefines += [("exit", "_bsd_exit")]
+    cppdefines += [("qsort", "_bsd_qsort")]
+    cppdefines += [("snprintf", "_bsd_snprintf")]
+    cppdefines += [("vsnprintf", "_bsd_vsnprintf")]
+    cppdefines += [("rename", "_bsd_rename")]
+
+raw_files = ["disk.img"]
+libs = ["iguana", "c", "gcc", "timer"]
+
+# Network buffer stuff for IOKit
+# files += src_glob("../libs/xnuglue/src/shared/netbuf.c")
+#iokitlib = [ "../build/iguana/libs/xnuglue/src/shared/netbuf.o" ]
+libs += [ "iokitcli" ]
+
+env.add_files( raw_files )
+obj = env.MyProgram( "darbat", files,
+                     EXTRA_CPPPATH=cpppath, 
+                     EXTRA_CPPDEFINES=cppdefines,
+                     EXTRA_CCFLAGS=ccflags,
+                     EXTRAOBJECTS = lmv_objs,
+                     LIBS=libs )
+
+
+
+Return("obj")
+
+
+
+
+# SCons sux. Do this to build asm syms.
+# gcc -o build/gen.s -S --std=gnu99 -Wall -Werror -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Wmissing-declarations -Wredundant-decls -Wundef -Wpointer-arith -Wno-nonnull -m32 -O2 -g -nostdlib -nostdinc -fno-builtin-log -fno-builtin-fork -fno-builtin-exit -fno-builtin-putchar -fno-strict-aliasing -Wno-pointer-sign -falign-functions=32 -D__LITTLE_ENDIAN__=1 -D__BIG_ENDIAN__=0 -DDARBAT=1 -DBAD_OPTIMIZATION=0 -DEXTRA_ASSERTIONS=1 -DMACH_PAGE_HASH_STATS=1 -DDIPC=0 -D__DARWIN_UNIX03=0 -D__private_extern__= -DNOTFB31=1 -DXPR_DEBUG=0 -DKDEBUG=0 -Dnotyet=0 -Dmig_internal=0 -DARCH_PRIVATE -DKERNEL -D_KERNEL_BUILD -DKERNEL_PRIVATE -DMACH_KERNEL -DMACH_KERNEL_PRIVATE -D__APPLE__ -DXNU_KERNEL_PRIVATE -DNeXT -DAPPLE -DDRIVER_PRIVATE -DPRIVATE -D__APPLE_API_PRIVATE -DMACH_BSD -Ilibs/c/include -Ilibs/c/arch_include/ia32 -Ilibs/l4/include -Ilibs/elf/include -Ilibs/l4e/include -Ilibs/iguana/include -Ilibs/naming/include -Ibuild/iguana/darbat/igcompat/first -Idarbat/igcompat/first -Ibuild/iguana/darbat/osfmk -Idarbat/osfmk -Ibuild/iguana/darbat/osfmk/vm -Idarbat/osfmk/vm -Ibuild/iguana/darbat/osfmk/mach -Idarbat/osfmk/mach -Ibuild/iguana/darbat/bsd -Idarbat/bsd -Ibuild/iguana/darbat/EXTERNAL_HEADERS -Idarbat/EXTERNAL_HEADERS -Ibuild/iguana/darbat/libkern -Idarbat/libkern -Ibuild/iguana/darbat/igcompat -Idarbat/igcompat -Ibuild/iguana/darbat/igcompat/mach_missing -Idarbat/igcompat/mach_missing -Ibuild/iguana/darbat/igcompat/machvm -Idarbat/igcompat/machvm darbat/osfmk/i386/genassym.c
+
+# sed -e '/#DEFINITION#/!d' -e 's/^.*#DEFINITION#//' -e 's/\$$//' build/gen.s > assym.s

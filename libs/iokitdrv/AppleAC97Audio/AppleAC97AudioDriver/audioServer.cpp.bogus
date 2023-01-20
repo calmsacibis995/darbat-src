@@ -1,0 +1,38 @@
+/*
+ * audioServer.cpp
+ *
+ * Geoffrey Lee glee at cse.unsw.edu.au
+ */
+
+#include <IOKit/IOLib.h>
+#include <IOKit/audio/IOAudioEngine.h>
+#include <IOKit/audio/IOAudioEngineUserClient.h>
+
+#include "audioServer.h"
+
+void
+createAudioServer(AppleAC97AudioEngine *engine)
+{
+#if 0
+	L4_Msg_t	msg;
+	L4_MsgTag_t	tag;
+	L4_ThreadId_t	tid;
+#endif
+	IOUserClient	*handler;
+	IOReturn	rc;
+
+	rc = engine->newUserClient(NULL, NULL, 0, &handler);
+	if (rc != kIOReturnSuccess)
+		printf("createAudioServer: failed\n");
+
+	
+#if 0
+again:
+	tag = L4_Wait(&tid);
+
+	for (;;) {
+
+		assert(L4_IpcSucceeded(tag));
+		L4_MsgStore(tag, &msg);
+#endif
+}

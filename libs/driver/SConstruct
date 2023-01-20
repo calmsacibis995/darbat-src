@@ -1,0 +1,24 @@
+Import("*")
+import os
+
+public_headers = ["#libs/driver/include", "#libs/driver/include/sys-%s" % args["system"]]
+
+if env.headers_only:
+    Return("public_headers")
+else:
+    if args["system"] in ["iguana"]:
+        cpppath = env.libs["l4"][0]
+    else:
+        cpppath = ""
+
+    libdriver = env.StaticLibrary('driver',
+                                  src_glob("src/*.c") + src_glob("src/sys-%s/*.c" % args["system"]),
+                                  CPPPATH=["src", "include",  "include/sys-%s" % args["system"]] +  env.libs["c"][0] + [cpppath])
+
+    if scons_version <= (0, 95):
+        libdriver = [libdriver]
+
+    libdriver = libdriver[0]
+
+    lib = (public_headers, libdriver, "#" + os.path.dirname(libdriver.path), None, [])
+    Return("lib")

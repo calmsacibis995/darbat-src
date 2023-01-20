@@ -1,0 +1,4 @@
+Import("*")
+obj = env.MyProgram("ig_trace", 
+                    LIBS=["c", "iguana", "trace", "l4", "l4e", "naming", "ll", "mutex", "gcc"])
+Return("obj")

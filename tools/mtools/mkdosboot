@@ -1,0 +1,17 @@
+#!/bin/sh
+# Example of a script making a Doc boot disk. Image will be t.img, a
+# FreeDos boot sector is expected in bootsect.dos, and diag contains
+# the system files
+
+IMAGE=t.img
+if [ $# = 1 ] ; then
+   IMAGE=$1
+fi
+
+./mformat -i $IMAGE -C -t 80 -s 18 -h 2 -B bootsect.dos ::
+./mcopy -i $IMAGE diag/io.sys ::IO.SYS
+./mcopy -i $IMAGE diag/msdos.sys ::MSDOS.SYS
+./mcopy -i $IMAGE diag/command.com ::COMMAND.COM
+./mcopy -i $IMAGE diag/drvspace.bin ::DRVSPACE.BIN
+
+./mattrib -i $IMAGE +s +h +r ::io.sys ::msdos.sys ::drvspace.bin

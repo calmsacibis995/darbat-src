@@ -1,0 +1,6 @@
+Import("src_glob")
+dite = Program("dite", src_glob("*.c"),
+        CPPPATH="include",
+        CPPDEFINES= {"VERSION" : '\\"1.0\\"'},
+		CCFLAGS=['-g'])
+Return("dite")

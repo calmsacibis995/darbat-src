@@ -1,0 +1,12 @@
+1.0:
+	Added direct support for Pistachio kcp and bootinfo.
+	Changed to SCons based build system.
+
+0.2.9:
+	Added -N flag.
+	Added IA64 support.
+	
+0.2.5:
+	Fixed a bug in dit.c where I memmoved 1 more than 
+I should in add_dit_segment.  Thanks goes to Ben Leslie for that
+on ;)

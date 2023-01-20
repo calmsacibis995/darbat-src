@@ -1,0 +1,6 @@
+Import("*")
+obj = env.KengeProgram("timer_example", LIBS=["c", "timer", "gcc", "l4", "iguana", "mutex", "naming", "l4e", "ll", "circular_buffer"])
+
+env["EXPECT_TEST_DATA"] = [("TIMER TEST PASSED", None)]
+
+Return("obj")

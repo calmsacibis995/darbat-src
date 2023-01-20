@@ -1,0 +1,81 @@
+--- orig/include/trace/tracebuffer.h
++++ mod/include/trace/tracebuffer.h
+@@ -80,13 +80,15 @@
+ #ifndef _LIBTRACE_TRACEBUFFER_H_
+ #define _LIBTRACE_TRACEBUFFER_H_
+ 
+-class trace_entry_t {
+-public:
+-    u64_t timestamp;
++#include <stdint.h>
++#include <l4/types.h>
++
++typedef struct {
++    uint64_t timestamp;
+     union{
+ 	struct {
+-#if defined(CONFIG_IS_64BIT)
+-	    BITFIELD7(word_t,
++#ifdef L4_64BIT
++	    L4_BITFIELD7(uintptr_t,
+ 		    id		: 16,	/* tracepoint id		*/
+ 		    user	: 1,	/* user / kernel		*/
+ 		    reclen	: 7,	/* number of words of data	*/
+@@ -96,7 +98,7 @@
+ 				: 16	/* unused			*/
+ 		    );
+ #else /* 32BIT */
+-	    BITFIELD6(word_t,
++	    L4_BITFIELD6(uintptr_t,
+ 		    id		: 8,	/* tracepoint id		*/
+ 		    user	: 1,	/* user / kernel		*/
+ 		    reclen	: 7,	/* number of words of data	*/
+@@ -106,32 +108,31 @@
+ 		    );
+ #endif
+ 	} x;
+-	word_t raw;
++	uintptr_t raw;
+     } hdr;
+-    word_t data[1];	/* code assumes size (1 word) here, do not change */
+-};
++    uintptr_t data[1];	/* code assumes size (1 word) here, do not change */
++} trace_entry_t;
+ 
+ #define TBUF_MAGIC	0x7b6b5b4b3b2b1b0bull
+ #define TBUF_VERSION	1
+ #define TBUF_ID		1	/* L4 tracebuffer */
+ #define TBUF_BUFFERS	2
+ 
+-class trace_buffer_t {
+-public:
+-    word_t magic;		/* magic number		*/
+-    word_t version;		/* tracebuffer version	*/
+-    word_t bufid;		/* tracebuffer id	*/
+-    word_t buffers;		/* number of buffers	*/
+-
+-    word_t log_mask;		/* mask of major IDs	*/
+-    word_t active_buffer;	/* current active buffer	*/
+-    word_t buffer_empty;	/* bitmask of available buffers	*/
+-    word_t buffer_size;		/* size of each buffer (bytes)	*/
++typedef struct {
++    uintptr_t magic;		/* magic number		*/
++    uintptr_t version;		/* tracebuffer version	*/
++    uintptr_t bufid;		/* tracebuffer id	*/
++    uintptr_t buffers;		/* number of buffers	*/
++
++    uintptr_t log_mask;		/* mask of major IDs	*/
++    uintptr_t active_buffer;	/* current active buffer	*/
++    uintptr_t buffer_empty;	/* bitmask of available buffers	*/
++    uintptr_t buffer_size;	/* size of each buffer (bytes)	*/
+ 
+     /* offset of each buffer	*/
+-    word_t buffer_offset[TBUF_BUFFERS];
++    uintptr_t buffer_offset[TBUF_BUFFERS];
+     /* current head pointer of each buffer (past last entry) */
+-    word_t buffer_head[TBUF_BUFFERS];
+-};
++    uintptr_t buffer_head[TBUF_BUFFERS];
++} trace_buffer_t;
+ 
+ #endif

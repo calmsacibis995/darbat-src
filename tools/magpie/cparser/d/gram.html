@@ -1,0 +1,771 @@
+<HTML><HEAD><TITLE>gram</TITLE></HEAD>
+<BODY><PRE>
+
+  <B>______________________________________________________________________</B>
+
+  Annex 0 (informative)
+
+  Grammar summary                                                 <A NAME="gram">[gram]</A>
+
+  <B>______________________________________________________________________</B>
+
+1 This summary of C++ syntax is intended to be an aid to  comprehension.
+  It  is  not  an  exact  statement of the language.  In particular, the
+  grammar described here accepts a superset  of  valid  C++  constructs.
+  Disambiguation rules (_<A HREF="stmt.html#stmt.ambig">stmt.ambig</A>_, _<A HREF="dcl.html#dcl.spec">dcl.spec</A>_, _<A HREF="derived.html#class.member.lookup">class.member.lookup</A>_)
+  must be applied to distinguish expressions  from  declarations.   Fur-
+  ther,  access  control, ambiguity, and type rules must be used to weed
+  out syntactically valid but meaningless constructs.
+
+  <I>1.1  Keywords</I>                                               <B><A NAME="gram.key">[gram.key]</A></B>
+
+1 New context-dependent keywords are introduced into a program by  type-
+  def  (_<A HREF="dcl.html#dcl.typedef">dcl.typedef</A>_),  namespace  (_<A HREF="dcl.html#namespace.def">namespace.def</A>_),  class (_<A HREF="class.html#class">class</A>_),
+  enumeration (_<A HREF="dcl.html#dcl.enum">dcl.enum</A>_), and template (_<A HREF="template.html#temp">temp</A>_) declarations.
+          <I>typedef-name:</I>
+                  <I>identifier</I>
+          <I>namespace-name:</I>
+                  <I>original-namespace-name</I>
+                  <I>namespace-alias</I>
+
+          <I>original-namespace-name:</I>
+                  <I>identifier</I>
+
+          <I>namespace-alias:</I>
+                  <I>identifier</I>
+          <I>class-name:</I>
+                  <I>identifier</I>
+                  <I>template-id</I>
+          <I>enum-name:</I>
+                  <I>identifier</I>
+          <I>template-name:</I>
+                  <I>identifier</I>
+  Note  that  a  <I>typedef-name</I>  naming  a  class  is  also  a  <I>class-name</I>
+  (_<A HREF="class.html#class.name">class.name</A>_).
+
+  <I>1.2  Lexical conventions</I>                                    <B><A NAME="gram.lex">[gram.lex]</A></B>
+          <I>hex-quad:</I>
+                  <I>hexadecimal-digit hexadecimal-digit hexadecimal-digit hexadecimal-digit</I>
+
+          <I>universal-character-name:</I>
+                  \u <I>hex-quad</I>
+                  \U <I>hex-quad hex-quad</I>
+
+          <I>preprocessing-token:</I>
+                  <I>header-name</I>
+                  <I>identifier</I>
+                  <I>pp-number</I>
+                  <I>character-literal</I>
+                  <I>string-literal</I>
+                  <I>preprocessing-op-or-punc</I>
+                  each non-white-space character that cannot be one of the above
+          <I>token:</I>
+                  <I>identifier</I>
+                  <I>keyword</I>
+                  <I>literal</I>
+                  <I>operator</I>
+                  <I>punctuator</I>
+          <I>header-name:</I>
+                  &lt;<I>h-char-sequence</I>&gt;
+                  "<I>q-char-sequence</I>"
+          <I>h-char-sequence:</I>
+                  <I>h-char</I>
+                  <I>h-char-sequence h-char</I>
+          <I>h-char:</I>
+                  any member of the source character set except
+                          new-line and &gt;
+          <I>q-char-sequence:</I>
+                  <I>q-char</I>
+                  <I>q-char-sequence q-char</I>
+          <I>q-char:</I>
+                  any member of the source character set except
+                          new-line and "
+          <I>pp-number:</I>
+                  <I>digit</I>
+                  . <I>digit</I>
+                  <I>pp-number digit</I>
+                  <I>pp-number nondigit</I>
+                  <I>pp-number</I> e <I>sign</I>
+                  <I>pp-number</I> E <I>sign</I>
+                  <I>pp-number</I> .
+          <I>identifier:</I>
+                  <I>nondigit</I>
+                  <I>identifier nondigit</I>
+                  <I>identifier digit</I>
+          <I>nondigit</I>: one of
+                  <I>universal-character-name</I>
+                  _ a b c d e f g h i j k l m
+                    n o p q r s t u v w x y z
+                    A B C D E F G H I J K L M
+                    N O P Q R S T U V W X Y Z
+          <I>digit</I>: one of
+                  0 1 2 3 4 5 6 7 8 9
+
+          <I>preprocessing-op-or-punc</I>: one of
+          {       }       [       ]       #       ##      (       )
+          &lt;:      :&gt;      &lt;%      %&gt;      %:      %:%:    ;       :       ...
+          new     delete  ?       ::      .       .*
+          +       -       *       /       %       ^       &amp;       |       ~
+          !       =       &lt;       &gt;       +=      -=      *=      /=      %=
+          ^=      &amp;=      |=      &lt;&lt;      &gt;&gt;      &gt;&gt;=     &lt;&lt;=     ==      !=
+          &lt;=      &gt;=      &amp;&amp;      ||      ++      --      ,       -&gt;*     -&gt;
+          and     and_eq  bitand  bitor   compl   not     not_eq  or      or_eq
+          xor     xor_eq
+
+          <I>literal:</I>
+                  <I>integer-literal</I>
+                  <I>character-literal</I>
+                  <I>floating-literal</I>
+                  <I>string-literal</I>
+                  <I>boolean-literal</I>
+          <I>integer-literal:</I>
+                  <I>decimal-literal integer-suffixopt</I>
+                  <I>octal-literal integer-suffixopt</I>
+                  <I>hexadecimal-literal integer-suffixopt</I>
+          <I>decimal-literal:</I>
+                  <I>nonzero-digit</I>
+                  <I>decimal-literal digit</I>
+          <I>octal-literal:</I>
+                  0
+                  <I>octal-literal octal-digit</I>
+          <I>hexadecimal-literal:</I>
+                  0x <I>hexadecimal-digit</I>
+                  0X <I>hexadecimal-digit</I>
+                  <I>hexadecimal-literal hexadecimal-digit</I>
+          <I>nonzero-digit:</I> one of
+                  1  2  3  4  5  6  7  8  9
+          <I>octal-digit:</I> one of
+                  0  1  2  3  4  5  6  7
+          <I>hexadecimal-digit:</I> one of
+                  0  1  2  3  4  5  6  7  8  9
+                  a  b  c  d  e  f
+                  A  B  C  D  E  F
+          <I>integer-suffix:</I>
+                  <I>unsigned-suffix long-suffixopt</I>
+                  <I>long-suffix unsigned-suffixopt</I>
+          <I>unsigned-suffix:</I> one of
+                  u  U
+          <I>long-suffix:</I> one of
+                  l  L
+          <I>character-literal:</I>
+                  '<I>c-char-sequence</I>'
+                  L'<I>c-char-sequence</I>'
+          <I>c-char-sequence:</I>
+                  <I>c-char</I>
+                  <I>c-char-sequence c-char</I>
+
+          <I>c-char:</I>
+                  any member of the source character set except
+                          the single-quote <B>'</B>, backslash <B>\</B>, or new-line character
+                  <I>escape-sequence</I>
+                  <I>universal-character-name</I>
+          <I>escape-sequence:</I>
+                  <I>simple-escape-sequence</I>
+                  <I>octal-escape-sequence</I>
+                  <I>hexadecimal-escape-sequence</I>
+          <I>simple-escape-sequence:</I> one of
+                  \'  \"  \?  \\
+                  \a  \b  \f  \n  \r  \t  \v
+          <I>octal-escape-sequence:</I>
+                  \ <I>octal-digit</I>
+                  \ <I>octal-digit octal-digit</I>
+                  \ <I>octal-digit octal-digit octal-digit</I>
+          <I>hexadecimal-escape-sequence:</I>
+                  \x <I>hexadecimal-digit</I>
+                  <I>hexadecimal-escape-sequence hexadecimal-digit</I>
+          <I>floating-literal:</I>
+                  <I>fractional-constant exponent-partopt floating-suffixopt</I>
+                  <I>digit-sequence exponent-part floating-suffixopt</I>
+          <I>fractional-constant:</I>
+                  <I>digit-sequenceopt</I> . <I>digit-sequence</I>
+                  <I>digit-sequence</I> .
+          <I>exponent-part:</I>
+                  e <I>signopt digit-sequence</I>
+                  E <I>signopt digit-sequence</I>
+          <I>sign:</I> one of
+                  +  -
+          <I>digit-sequence:</I>
+                  <I>digit</I>
+                  <I>digit-sequence digit</I>
+          <I>floating-suffix:</I> one of
+                  f  l  F  L
+          <I>string-literal:</I>
+                  "<I>s-char-sequenceopt</I>"
+                  L"<I>s-char-sequenceopt</I>"
+          <I>s-char-sequence:</I>
+                  <I>s-char</I>
+                  <I>s-char-sequence s-char</I>
+          <I>s-char:</I>
+                  any member of the source character set except
+                          the double-quote ", backslash \, or new-line character
+                  <I>escape-sequence</I>
+                  <I>universal-character-name</I>
+          <I>boolean-literal:</I>
+                  false
+                  true
+
+  <I>1.3  Basic concepts</I>                                       <B><A NAME="gram.basic">[gram.basic]</A></B>
+          <I>translation-unit:</I>
+                  <I>declaration-seqopt</I>
+
+  <I>1.4  Expressions</I>                                           <B><A NAME="gram.expr">[gram.expr]</A></B>
+          <I>primary-expression:</I>
+                  <I>literal</I>
+                  this
+                  :: <I>identifier</I>
+                  :: <I>operator-function-id</I>
+                  :: <I>qualified-id</I>
+                  ( <I>expression</I> )
+                  <I>id-expression</I>
+
+          <I>id-expression:</I>
+                  <I>unqualified-id</I>
+                  <I>qualified-id</I>
+          <I>id-expression:</I>
+                  <I>unqualified-id</I>
+                  <I>qualified-id</I>
+
+          <I>unqualified-id:</I>
+                  <I>identifier</I>
+                  <I>operator-function-id</I>
+                  <I>conversion-function-id</I>
+                  <I>~ class-name</I>
+                  <I>template-id</I>
+          <I>qualified-id:</I>
+                  <I>nested-name-specifier</I> template<I>opt unqualified-id</I>
+          <I>nested-name-specifier:</I>
+                  <I>class-or-namespace-name :: nested-name-specifieropt</I>
+
+          <I>class-or-namespace-name:</I>
+                  <I>class-name</I>
+                  <I>namespace-name</I>
+          <I>postfix-expression:</I>
+                  <I>primary-expression</I>
+                  <I>postfix-expression</I> [ <I>expression</I> ]
+                  <I>postfix-expression</I> ( <I>expression-listopt</I> )
+                  <I>simple-type-specifier</I> ( <I>expression-listopt</I> )
+                  <I>postfix-expression</I> . template<I>opt</I> ::<I>opt id-expression</I>
+                  <I>postfix-expression</I> -&gt; template<I>opt</I> ::<I>opt id-expression</I>
+                  <I>postfix-expression</I> . <I>pseudo-destructor-name</I>
+                  <I>postfix-expression</I> -&gt; <I>pseudo-destructor-name</I>
+                  <I>postfix-expression</I> ++
+                  <I>postfix-expression</I> --
+                  dynamic_cast &lt; <I>type-id</I> &gt; ( <I>expression</I> )
+                  static_cast &lt; <I>type-id</I> &gt; ( <I>expression</I> )
+                  reinterpret_cast &lt; <I>type-id</I> &gt; ( <I>expression</I> )
+                  const_cast &lt; <I>type-id</I> &gt; ( <I>expression</I> )
+                  typeid ( <I>expression</I> )
+                  typeid ( <I>type-id</I> )
+
+          <I>expression-list:</I>
+                  <I>assignment-expression</I>
+                  <I>expression-list</I> , <I>assignment-expression</I>
+          <I>pseudo-destructor-name:</I>
+                  ::<I>opt nested-name-specifieropt type-name</I> :: ~ <I>type-name</I>
+                  ::<I>opt nested-name-specifieropt</I> ~ <I>type-name</I>
+          <I>unary-expression:</I>
+                  <I>postfix-expression</I>
+                  ++  <I>cast-expression</I>
+                  --  <I>cast-expression</I>
+                  <I>unary-operator cast-expression</I>
+                  sizeof <I>unary-expression</I>
+                  sizeof ( <I>type-id</I> )
+                  <I>new-expression</I>
+                  <I>delete-expression</I>
+          <I>unary-operator:</I> one of
+                  *  &amp;  +  -  !  ~
+          <I>new-expression:</I>
+                  ::<I>opt</I> new <I>new-placementopt new-type-id new-initializeropt</I>
+                  ::<I>opt</I> new <I>new-placementopt</I> ( <I>type-id</I> ) <I>new-initializeropt</I>
+          <I>new-placement:</I>
+                  ( <I>expression-list</I> )
+          <I>new-type-id:</I>
+                  <I>type-specifier-seq new-declaratoropt</I>
+          <I>new-declarator:</I>
+                  <I>ptr-operator new-declaratoropt</I>
+                  <I>direct-new-declarator</I>
+          <I>direct-new-declarator:</I>
+                  [ <I>expression</I> ]
+                  <I>direct-new-declarator</I> [ <I>constant-expression</I> ]
+          <I>new-initializer:</I>
+                  ( <I>expression-listopt</I> )
+          <I>delete-expression:</I>
+                  ::<I>opt</I> delete <I>cast-expression</I>
+                  ::<I>opt</I> delete [ ] <I>cast-expression</I>
+          <I>cast-expression:</I>
+                  <I>unary-expression</I>
+                  ( <I>type-id</I> ) <I>cast-expression</I>
+          <I>pm-expression:</I>
+                  <I>cast-expression</I>
+                  <I>pm-expression</I> .* <I>cast-expression</I>
+                  <I>pm-expression</I> -&gt;* <I>cast-expression</I>
+          <I>multiplicative-expression:</I>
+                  <I>pm-expression</I>
+                  <I>multiplicative-expression</I> * <I>pm-expression</I>
+                  <I>multiplicative-expression</I> / <I>pm-expression</I>
+                  <I>multiplicative-expression</I> % <I>pm-expression</I>
+          <I>additive-expression:</I>
+                  <I>multiplicative-expression</I>
+                  <I>additive-expression</I> + <I>multiplicative-expression</I>
+                  <I>additive-expression</I> - <I>multiplicative-expression</I>
+
+          <I>shift-expression:</I>
+                  <I>additive-expression</I>
+                  <I>shift-expression</I> &lt;&lt; <I>additive-expression</I>
+                  <I>shift-expression</I> &gt;&gt; <I>additive-expression</I>
+          <I>relational-expression:</I>
+                  <I>shift-expression</I>
+                  <I>relational-expression</I> &lt; <I>shift-expression</I>
+                  <I>relational-expression</I> &gt; <I>shift-expression</I>
+                  <I>relational-expression</I> &lt;= <I>shift-expression</I>
+                  <I>relational-expression</I> &gt;= <I>shift-expression</I>
+          <I>equality-expression:</I>
+                  <I>relational-expression</I>
+                  <I>equality-expression</I> == <I>relational-expression</I>
+                  <I>equality-expression</I> != <I>relational-expression</I>
+          <I>and-expression:</I>
+                  <I>equality-expression</I>
+                  <I>and-expression</I> &amp; <I>equality-expression</I>
+          <I>exclusive-or-expression:</I>
+                  <I>and-expression</I>
+                  <I>exclusive-or-expression</I> ^ <I>and-expression</I>
+          <I>inclusive-or-expression:</I>
+                  <I>exclusive-or-expression</I>
+                  <I>inclusive-or-expression</I> | <I>exclusive-or-expression</I>
+          <I>logical-and-expression:</I>
+                  <I>inclusive-or-expression</I>
+                  <I>logical-and-expression</I> &amp;&amp; <I>inclusive-or-expression</I>
+          <I>logical-or-expression:</I>
+                  <I>logical-and-expression</I>
+                  <I>logical-or-expression</I> || <I>logical-and-expression</I>
+          <I>conditional-expression:</I>
+                  <I>logical-or-expression</I>
+                  <I>logical-or-expression</I> ? <I>expression</I> : <I>assignment-expression</I>
+          <I>assignment-expression:</I>
+                  <I>conditional-expression</I>
+                  <I>logical-or-expression assignment-operator assignment-expression</I>
+                  <I>throw-expression</I>
+          <I>assignment-operator</I>: one of
+                  =  *=  /=  %=   +=  -=  &gt;&gt;=  &lt;&lt;=  &amp;=  ^=  |=
+          <I>expression:</I>
+                  <I>assignment-expression</I>
+                  <I>expression</I> , <I>assignment-expression</I>
+          <I>constant-expression:</I>
+                  <I>conditional-expression</I>
+
+  <I>1.5  Statements</I>                                       <B><A NAME="gram.stmt.stmt">[gram.stmt.stmt]</A></B>
+          <I>statement:</I>
+                  <I>labeled-statement</I>
+                  <I>expression-statement</I>
+                  <I>compound-statement</I>
+                  <I>selection-statement</I>
+                  <I>iteration-statement</I>
+                  <I>jump-statement</I>
+                  <I>declaration-statement</I>
+                  <I>try-block</I>
+
+          <I>labeled-statement:</I>
+                  <I>identifier</I> : <I>statement</I>
+                  case <I>constant-expression</I> : <I>statement</I>
+                  default : <I>statement</I>
+          <I>expression-statement:</I>
+                  <I>expressionopt</I> ;
+          <I>compound-statement:</I>
+                   { <I>statement-seqopt</I> }
+          <I>statement-seq:</I>
+                  <I>statement</I>
+                  <I>statement-seq statement</I>
+          <I>selection-statement:</I>
+                  if ( <I>condition</I> ) <I>statement</I>
+                  if ( <I>condition</I> ) <I>statement</I> else <I>statement</I>
+                  switch ( <I>condition</I> ) <I>statement</I>
+          <I>condition:</I>
+                  <I>expression</I>
+                  <I>type-specifier-seq declarator</I> = <I>assignment-expression</I>
+          <I>iteration-statement:</I>
+                  while ( <I>condition</I> ) <I>statement</I>
+                  do <I>statement</I>  while ( <I>expression</I> ) ;
+                  for ( <I>for-init-statement conditionopt</I> ; <I>expressionopt</I> ) <I>statement</I>
+          <I>for-init-statement:</I>
+                  <I>expression-statement</I>
+                  <I>simple-declaration</I>
+          <I>jump-statement:</I>
+                  break ;
+                  continue ;
+                  return <I>expressionopt</I> ;
+                  goto <I>identifier</I> ;
+          <I>declaration-statement:</I>
+                  <I>block-declaration</I>
+
+  <I>1.6  Declarations</I>                                       <B><A NAME="gram.dcl.dcl">[gram.dcl.dcl]</A></B>
+          <I>declaration-seq:</I>
+                  <I>declaration</I>
+                  <I>declaration-seq declaration</I>
+          <I>declaration:</I>
+                  <I>block-declaration</I>
+                  <I>function-definition</I>
+                  <I>template-declaration</I>
+                  <I>explicit-instantiation</I>
+                  <I>explicit-specialization</I>
+                  <I>linkage-specification</I>
+                  <I>namespace-definition</I>
+          <I>block-declaration:</I>
+                  <I>simple-declaration</I>
+                  <I>asm-definition</I>
+                  <I>namespace-alias-definition</I>
+                  <I>using-declaration</I>
+                  <I>using-directive</I>
+          <I>simple-declaration:</I>
+                  <I>decl-specifier-seqopt init-declarator-listopt</I> ;
+
+          <I>decl-specifier:</I>
+                  <I>storage-class-specifier</I>
+                  <I>type-specifier</I>
+                  <I>function-specifier</I>
+                  friend
+                  typedef
+          <I>decl-specifier-seq:</I>
+                  <I>decl-specifier-seqopt decl-specifier</I>
+          <I>storage-class-specifier:</I>
+                  auto
+                  register
+                  static
+                  extern
+                  mutable
+          <I>function-specifier:</I>
+                  inline
+                  virtual
+                  explicit
+          <I>typedef-name:</I>
+                  <I>identifier</I>
+          <I>type-specifier:</I>
+                  <I>simple-type-specifier</I>
+                  <I>class-specifier</I>
+                  <I>enum-specifier</I>
+                  <I>elaborated-type-specifier</I>
+                  <I>cv-qualifier</I>
+          <I>simple-type-specifier:</I>
+                  ::opt <I>nested-name-specifieropt type-name</I>
+                  char
+                  wchar_t
+                  bool
+                  short
+                  int
+                  long
+                  signed
+                  unsigned
+                  float
+                  double
+                  void
+          <I>type-name:</I>
+                  <I>class-name</I>
+                  <I>enum-name</I>
+                  <I>typedef-name</I>
+          <I>elaborated-type-specifier:</I>
+                  <I>class-key</I> ::opt <I>nested-name-specifieropt identifier</I>
+                  enum ::<I>opt nested-name-specifieropt identifier</I>
+                  typename ::<I>opt nested-name-specifier identifier</I>
+                  typename ::<I>opt nested-name-specifier identifier</I> &lt; <I>template-argument-list</I> &gt;
+          <I>enum-name:</I>
+                  <I>identifier</I>
+          <I>enum-specifier:</I>
+                  enum <I>identifieropt</I> { <I>enumerator-listopt</I> }
+
+          <I>enumerator-list:</I>
+                  <I>enumerator-definition</I>
+                  <I>enumerator-list</I> , <I>enumerator-definition</I>
+          <I>enumerator-definition:</I>
+                  <I>enumerator</I>
+                  <I>enumerator</I> = <I>constant-expression</I>
+          <I>enumerator:</I>
+                  <I>identifier</I>
+          <I>namespace-name:</I>
+                  <I>original-namespace-name</I>
+                  <I>namespace-alias</I>
+          <I>original-namespace-name:</I>
+                  <I>identifier</I>
+
+          <I>namespace-definition:</I>
+                  <I>named-namespace-definition</I>
+                  <I>unnamed-namespace-definition</I>
+
+          <I>named-namespace-definition:</I>
+                  <I>original-namespace-definition</I>
+                  <I>extension-namespace-definition</I>
+
+          <I>original-namespace-definition:</I>
+                  namespace <I>identifier</I> { <I>namespace-body</I> }
+
+          <I>extension-namespace-definition:</I>
+                  namespace <I>original-namespace-name</I>  { <I>namespace-body</I> }
+
+          <I>unnamed-namespace-definition:</I>
+                  namespace { <I>namespace-body</I> }
+
+          <I>namespace-body:</I>
+                  <I>declaration-seqopt</I>
+          <I>namespace-alias:</I>
+                  <I>identifier</I>
+
+          <I>namespace-alias-definition:</I>
+                  namespace <I>identifier</I> = <I>qualified-namespace-specifier ;</I>
+
+          <I>qualified-namespace-specifier:</I>
+                  <I>::opt nested-name-specifieropt namespace-name</I>
+          <I>using-declaration:</I>
+                  using typenameopt ::opt <I>nested-name-specifier unqualified-id</I> ;
+                  using ::  <I>unqualified-id</I> ;
+          <I>using-directive:</I>
+                  using  namespace ::opt <I>nested-name-specifieropt namespace-name ;</I>
+          <I>asm-definition:</I>
+                  asm ( <I>string-literal</I> ) ;
+          <I>linkage-specification:</I>
+                  extern <I>string-literal</I> { <I>declaration-seqopt</I> }
+                  extern <I>string-literal declaration</I>
+
+  <I>1.7  Declarators</I>                                       <B><A NAME="gram.dcl.decl">[gram.dcl.decl]</A></B>
+          <I>init-declarator-list:</I>
+                  <I>init-declarator</I>
+                  <I>init-declarator-list</I> , <I>init-declarator</I>
+          <I>init-declarator:</I>
+                  <I>declarator initializeropt</I>
+          <I>declarator:</I>
+                  <I>direct-declarator</I>
+                  <I>ptr-operator declarator</I>
+          <I>direct-declarator:</I>
+                  <I>declarator-id</I>
+                  <I>direct-declarator</I> ( <I>parameter-declaration-clause</I> ) <I>cv-qualifier-seqopt exception-specificationopt</I>
+                  <I>direct-declarator</I> [ <I>constant-expressionopt</I> ]
+                  ( <I>declarator</I> )
+          <I>ptr-operator:</I>
+                  * <I>cv-qualifier-seqopt</I>
+                  &amp;
+                  ::<I>opt nested-name-specifier</I> * <I>cv-qualifier-seqopt</I>
+          <I>cv-qualifier-seq:</I>
+                  <I>cv-qualifier cv-qualifier-seqopt</I>
+          <I>cv-qualifier:</I>
+                  const
+                  volatile
+          <I>declarator-id:</I>
+                  ::<I>opt id-expression</I>
+                  ::<I>opt nested-name-specifieropt type-name</I>
+          <I>type-id:</I>
+                  <I>type-specifier-seq abstract-declaratoropt</I>
+          <I>type-specifier-seq:</I>
+                  <I>type-specifier type-specifier-seqopt</I>
+          <I>abstract-declarator:</I>
+                  <I>ptr-operator abstract-declaratoropt</I>
+                  <I>direct-abstract-declarator</I>
+          <I>direct-abstract-declarator:</I>
+                  <I>direct-abstract-declaratoropt</I> ( <I>parameter-declaration-clause</I> ) <I>cv-qualifier-seqopt exception-specificationopt</I>
+                  <I>direct-abstract-declaratoropt</I> [ <I>constant-expressionopt</I> ]
+                  ( <I>abstract-declarator</I> )
+          <I>parameter-declaration-clause:</I>
+                  <I>parameter-declaration-listopt</I> ...<I>opt</I>
+                  <I>parameter-declaration-list</I> , ...
+          <I>parameter-declaration-list:</I>
+                  <I>parameter-declaration</I>
+                  <I>parameter-declaration-list</I> , <I>parameter-declaration</I>
+          <I>parameter-declaration:</I>
+                  <I>decl-specifier-seq declarator</I>
+                  <I>decl-specifier-seq declarator</I> = <I>assignment-expression</I>
+                  <I>decl-specifier-seq abstract-declaratoropt</I>
+                  <I>decl-specifier-seq abstract-declaratoropt</I> = <I>assignment-expression</I>
+          <I>function-definition:</I>
+                  <I>decl-specifier-seqopt declarator ctor-initializeropt function-body</I>
+                  <I>decl-specifier-seqopt declarator function-try-block</I>
+
+          <I>function-body:</I>
+                  <I>compound-statement</I>
+
+          <I>initializer:</I>
+                  = <I>initializer-clause</I>
+                  ( <I>expression-list</I> )
+          <I>initializer-clause:</I>
+                  <I>assignment-expression</I>
+                  { <I>initializer-list</I> ,<I>opt</I> }
+                  { }
+          <I>initializer-list:</I>
+                  <I>initializer-clause</I>
+                  <I>initializer-list</I> , <I>initializer-clause</I>
+
+  <I>1.8  Classes</I>                                              <B><A NAME="gram.class">[gram.class]</A></B>
+          <I>class-name:</I>
+                  <I>identifier</I>
+                  <I>template-id</I>
+          <I>class-specifier:</I>
+                  <I>class-head</I> { <I>member-specificationopt</I> }
+          <I>class-head:</I>
+                  <I>class-key identifieropt base-clauseopt</I>
+                  <I>class-key nested-name-specifier identifier base-clauseopt</I>
+          <I>class-key:</I>
+                  class
+                  struct
+                  union
+          <I>member-specification:</I>
+                  <I>member-declaration member-specificationopt</I>
+                  <I>access-specifier</I> : <I>member-specificationopt</I>
+          <I>member-declaration:</I>
+                  <I>decl-specifier-seqopt member-declarator-listopt</I> ;
+                  <I>function-definition</I> ;<I>opt</I>
+                  <I>qualified-id</I> ;
+                  <I>using-declaration</I>
+                  <I>template-declaration</I>
+          <I>member-declarator-list:</I>
+                  <I>member-declarator</I>
+                  <I>member-declarator-list</I> , <I>member-declarator</I>
+          <I>member-declarator:</I>
+                  <I>declarator pure-specifieropt</I>
+                  <I>declarator constant-initializeropt</I>
+                  <I>identifieropt</I> : <I>constant-expression</I>
+          <I>pure-specifier:</I>
+                   = 0
+          <I>constant-initializer:</I>
+                   = <I>constant-expression</I>
+
+  <I>1.9  Derived classes</I>                              <B><A NAME="gram.class.derived">[gram.class.derived]</A></B>
+          <I>base-clause:</I>
+                  : <I>base-specifier-list</I>
+          <I>base-specifier-list:</I>
+                  <I>base-specifier</I>
+                  <I>base-specifier-list</I> , <I>base-specifier</I>
+
+          <I>base-specifier:</I>
+                  <I>::opt nested-name-specifieropt class-name</I>
+                  <I>virtual access-specifieropt ::opt nested-name-specifieropt class-name</I>
+                  <I>access-specifier virtualopt ::opt nested-name-specifieropt class-name</I>
+          <I>access-specifier:</I>
+                  private
+                  protected
+                  public
+
+  <I>1.10  Special member functions</I>                          <B><A NAME="gram.special">[gram.special]</A></B>
+          <I>conversion-function-id:</I>
+                  operator <I>conversion-type-id</I>
+          <I>conversion-type-id:</I>
+                  <I>type-specifier-seq conversion-declaratoropt</I>
+          <I>conversion-declarator:</I>
+                  <I>ptr-operator conversion-declaratoropt</I>
+          <I>ctor-initializer:</I>
+                  : <I>mem-initializer-list</I>
+          <I>mem-initializer-list:</I>
+                  <I>mem-initializer</I>
+                  <I>mem-initializer</I> , <I>mem-initializer-list</I>
+          <I>mem-initializer:</I>
+                  <I>mem-initializer-id</I> ( <I>expression-listopt</I> )
+          <I>mem-initializer-id:</I>
+                  ::<I>opt nested-name-specifieropt class-name</I>
+                  <I>identifier</I>
+
+  <I>1.11  Overloading</I>                                          <B><A NAME="gram.over">[gram.over]</A></B>
+          <I>operator-function-id:</I>
+                  operator <I>operator</I>
+          <I>operator:</I> one of
+                  new  delete    new[]     delete[]
+                  +    -    *    /    %    ^    &amp;    |    ~
+                  !    =    &lt;    &gt;    +=   -=   *=   /=   %=
+                  ^=   &amp;=   |=   &lt;&lt;   &gt;&gt;   &gt;&gt;=  &lt;&lt;=  ==   !=
+                  &lt;=   &gt;=   &amp;&amp;   ||   ++   --   ,    -&gt;*  -&gt;
+                  ()   []
+
+  <I>1.12  Templates</I>                                            <B><A NAME="gram.temp">[gram.temp]</A></B>
+          <I>template-declaration</I>:
+                  export<I>opt</I> template &lt; <I>template-parameter-list</I> &gt; <I>declaration</I>
+          <I>template-parameter-list</I>:
+                  <I>template-parameter</I>
+                  <I>template-parameter-list</I> , <I>template-parameter</I>
+          <I>template-parameter:</I>
+                  <I>type-parameter</I>
+                  <I>parameter-declaration</I>
+          <I>type-parameter:</I>
+                  class <I>identifieropt</I>
+                  class <I>identifieropt</I> = <I>type-id</I>
+                  typename <I>identifieropt</I>
+                  typename <I>identifieropt</I> = <I>type-id</I>
+                  template &lt; <I>template-parameter-list</I> &gt; class  <I>identifieropt</I>
+                  template &lt; <I>template-parameter-list</I> &gt; class  <I>identifieropt</I> = <I>template-name</I>
+
+          <I>template-id</I>:
+                  <I>template-name</I> &lt; <I>template-argument-list</I> &gt;
+          <I>template-name</I>:
+                  <I>identifier</I>
+          <I>template-argument-list</I>:
+                  <I>template-argument</I>
+                  <I>template-argument-list</I> , <I>template-argument</I>
+          <I>template-argument</I>:
+                  <I>assignment-expression</I>
+                  <I>type-id</I>
+                  <I>template-name</I>
+          <I>explicit-instantiation</I>:
+                  <I>template-declaration</I>
+          <I>explicit-specialization</I>:
+                  template &lt; &gt; <I>declaration</I>
+
+  <I>1.13  Exception handling</I>                                 <B><A NAME="gram.except">[gram.except]</A></B>
+          <I>try-block:</I>
+                   try <I>compound-statement handler-seq</I>
+          <I>function-try-block:</I>
+                   try  <I>ctor-initializeropt function-body handler-seq</I>
+          <I>handler-seq:</I>
+                  <I>handler handler-seqopt</I>
+          <I>handler:</I>
+                  catch ( <I>exception-declaration</I> ) <I>compound-statement</I>
+          <I>exception-declaration:</I>
+                  <I>type-specifier-seq declarator</I>
+                  <I>type-specifier-seq abstract-declarator</I>
+                  <I>type-specifier-seq</I>
+                  ...
+          <I>throw-expression:</I>
+                  throw <I>assignment-expressionopt</I>
+          <I>exception-specification:</I>
+                  throw ( <I>type-id-listopt</I> )
+          <I>type-id-list:</I>
+                  <I>type-id</I>
+                  <I>type-id-list</I> ,  <I>type-id</I>
+
+  <I>1.14  Preprocessing directives</I>                              <B><A NAME="gram.cpp">[gram.cpp]</A></B>
+          <I>preprocessing-file:</I>
+                  <I>groupopt</I>
+          <I>group:</I>
+                  <I>group-part</I>
+                  <I>group group-part</I>
+          <I>group-part:</I>
+                  <I>pp-tokensopt new-line</I>
+                  <I>if-section</I>
+                  <I>control-line</I>
+          <I>if-section:</I>
+                  <I>if-group elif-groupsopt else-groupopt endif-line</I>
+          <I>if-group:</I>
+                  # if     <I>constant-expression new-line groupopt</I>
+                  # ifdef  <I>identifier new-line groupopt</I>
+                  # ifndef <I>identifier new-line groupopt</I>
+
+          <I>elif-groups:</I>
+                  <I>elif-group</I>
+                  <I>elif-groups elif-group</I>
+          <I>elif-group:</I>
+                  # elif   <I>constant-expression new-line groupopt</I>
+          <I>else-group:</I>
+                  # else   <I>new-line groupopt</I>
+          <I>endif-line:</I>
+                  # endif  <I>new-line</I>
+          <I>control-line:</I>
+                  # include <I>pp-tokens new-line</I>
+                  # define  <I>identifier replacement-list new-line</I>
+                  # define  <I>identifier lparen identifier-listopt</I> ) <I>replacement-list new-line</I>
+                  # undef   <I>identifier new-line</I>
+                  # line    <I>pp-tokens new-line</I>
+                  # error   <I>pp-tokensopt new-line</I>
+                  # pragma  <I>pp-tokensopt new-line</I>
+                  #         <I>new-line</I>
+          <I>lparen:</I>
+                  the left-parenthesis character without preceding white-space
+          <I>replacement-list:</I>
+                  <I>pp-tokensopt</I>
+          <I>pp-tokens:</I>
+                  <I>preprocessing-token</I>
+                  <I>pp-tokens preprocessing-token</I>
+          <I>new-line:</I>
+                  the new-line character
+
+</PRE></BODY>

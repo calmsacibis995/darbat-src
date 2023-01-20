@@ -1,0 +1,56 @@
+Import("*")
+
+# the only difference here is that we do not specify a link script,
+# since in the Mach-O version, things are parsed at run-time not
+# hardcoded by the linker at link-time.
+obj = None
+
+ccflags = ["-fno-strict-aliasing", 
+	"-D__pic__",
+	"-static",
+	"-Ilibs/xnuglue/xnu_include/include", 
+	"-Ilibs/xnuglue/xnu_include/include/EXTERNAL_HEADERS", 
+	"-Ilibs/libkern",
+	"-Ilibs/iokit",
+	"-DBSD_BUILD=1",
+	"-DL4IOKIT=1", 
+	"-D__LITTLE_ENDIAN__=1", 
+	"-D__BIG_ENDIAN__=0",	
+	"-DKERNEL=1",
+	"-DKERNEL_PRIVATE=1",
+	"-Ilibs/xnuglue/xnu_include/include/osfmk", 
+	"-Ilibs/xnuglue/xnu_include/include/bsd", 
+	"-Ilibs/xnuglue/xnu_include/include/pexpert"]
+
+# Do we want verbose printing?
+if( args.get("verbose_iokit", "false" ) ):
+	ccflags += ["-DVERBOSE_IOKIT=1"]
+
+if env.toolchain_name == "gnuelf":
+# how the hell does this work?  Pants.
+    linkobj = env.Command(["linkhack.x"], ["linkhack"], "cp $SOURCE $TARGET")
+    obj = env.MyProgram("iguana_iokit", 
+	LINKFLAGS=["-r",
+	"--whole-archive", 
+	"-Lbuild/iguana/libs/iokit", 
+	"-Lbuild/iguana/libs/libkern", 
+	"-Lbuild/iguana/libs/xnuglue", 
+	"-Lbuild/iguana/libs/libsa", 
+	"-Lbuild/iguana/libs/iokitdrv", 
+	"-lxnuglue",
+	"-lsa",
+	"-liokit", 
+	"-lkern", 
+	"-liokitdrv", 
+	"--no-whole-archive"], 
+	CCFLAGS=ccflags, 
+	LIBS=["dynamic", "xnuglue", "iguana", "c"], 
+	LINKSCRIPTS=linkobj)
+elif env.toolchain_name == "apple":
+    obj = env.MyProgram("iguana_iokit", 
+	CCFLAGS=ccflags, 
+	LIBS=["dynamic", "xnuglue", "iguana", "c"])
+else:
+	raise "unknown toolchain"
+
+Return("obj")

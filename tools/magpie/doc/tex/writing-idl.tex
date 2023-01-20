@@ -1,0 +1,127 @@
+\chapter{IDL files}
+
+Magpie supports a subset of the OMG CORBA specification\cite{OMG:Corba}, and produces output files conforming to an appropriate subset of the OMG CORBA C mapping\footnote{This is not a limitation of Magpie's core, but stubs for other output types have not been written.}.
+
+Using CORBA nomenclature, IDL files define a number of {\it interfaces}, each of which is composed of one or more {\it operations}. An operation takes zero or more {\it parameters} of various {\it types}, and always returns a single type instance, which may be {\tt nil}. Interfaces and functions may be {\it annotated} to specify additional attributes.
+
+In C terms, interfaces contain a collection of functions. The role of Magpie is to provide client and service stubs to make invoking an operation on an interface look the same as a regular function call to clients. Calling operations on an interface can be thought of as similar to calling member functions of a C++ class instance. The mapping from this C++ mechanism to C is straightforward: rather than an implicit {\tt this} argument, an explicit instance identifier is passed as the first parameter of every function call.
+
+\section{A simple example}
+Construction of an IDL is best illustrated with an example. A full IDL (but small) example is given in Figure \ref{figure:writingidl:example}, and important parts of the example are discussed in the following Sections.
+
+\begin{figure}
+\begin{verbatim}
+ 1 /*
+ 2  * Iguana IDL for dealing with userland, eg. pagefaults, exceptions, syscalls.
+ 3  *
+ 4  */
+ 5
+ 6 import "constants.h";
+ 7 import "mytypes.h";
+ 8
+ 9 [uuid(IGUANA_PD_UUID)]
+10 interface iguana_pd
+11 {
+12     int create_memsection(in pd_ref_t pd, out int result);
+13 };
+\end{verbatim}
+\caption{A simple IDL file (line numbers are not part of the file)}
+\label{figure:writingidl:example}
+\end{figure}
+
+\section{Imports}
+\begin{verbatim}
+import "header-filename";
+\end{verbatim}
+Types and constants defined in C header files may be imported using the {\tt import} keyword, as shown in lines 6 and 7 of the example. The defined types may then be used within the IDL as parameters or return values of operations. Magpie parses the C definition of the type, because it must know the size of instances of the type when producing stub code.
+
+Magpie is also capable of parsing C++ header files, but import of types specific to C++ (such as classes) is not yet supported. This means that you may have C++ constructs in your imported header files, but you may not reference them as parameters or return values of operations. Support for C++ types is planned for a future release of Magpie.
+
+\subsection{Constant declarations}
+If Magpie encounters constant declarations in imported header files, it converts them into appropriate preprocessor {\tt \#define} statements in service stub output. Figure \ref{figure.constdecl.c} shows an example constant declaration. The converted output is shown in figure \ref{figure.constdecl.magpie}.
+\begin{figure}
+\begin{verbatim}
+const int IGUANA_PD_UUID = 22;
+\end{verbatim}
+\caption{A const declaration in a C header file.}
+\label{figure.constdecl.c}
+\end{figure}
+Is converted into the following line in service stub output:
+\begin{figure}
+\begin{verbatim}
+#define _C_IGUANA_PD_UUID 22
+\end{verbatim}
+\caption{The converted const declaration in Magpie output.}
+\label{figure.constdecl.magpie}
+\end{figure}
+Constant conversion is a specific convenience for C programmers, because in C the only type that may be used as an argument to {\tt case} within a {\tt switch} statement is a literal integer - {\tt const int} is not acceptable. The ability to {\tt switch} on constants is very useful (the Magpie server dispatch loop uses it, for example).
+
+\section{Interfaces}
+\begin{verbatim}
+[annotation]
+interface <interface name>
+{
+    <operation-list>
+}
+\end{verbatim}
+Interfaces are Magpie's way of grouping functions --- all functions must be in an interface. They are specified using the {\tt interface} keyword. The example above contains only one interface definition, starting on line 10, but multiple interfaces may be specified. All interfaces must have a name, and interfaces may not be nested. In stub code, interfaces are identified by their uuid, which is discussed below.
+
+\subsection{Interface annotations}
+Annotations are a fairly free-form way to provide extra information about an interface. Magpie only recognises one type of annotation, {\tt uuid}, and it must be present.\footnote{If you are interested in extending Magpie, interfaces produced by the default generator, {\tt v4}, can produce a Python dictionary of all annotations using the {\tt get\_annotations()} method.} The syntax for a UUID annotation is given below.
+\begin{verbatim}
+[uuid(uuid-num)]
+\end{verbatim}
+
+Interface UUIDs must be unique among all interfaces accepted by a single thread. Two interfaces which are never implemented by the same thread need not have unique UUIDs, but you may choose to ensure all interfaces have globally-unique IDs to avoid confusion.
+
+The UUID number may be defined in an included C or C++ header file as a {\tt const int} value.
+\begin{verbatim}
+/* C code */
+const int IGUANA_PD_UUID = 22;
+\end{verbatim}
+The UUID number may also be specified in the IDL file using the same syntax.
+\begin{verbatim}
+/* IDL code */
+const int IGUANA_PD_UUID = 22;
+\end{verbatim}
+
+\section{Operations}
+\begin{verbatim}
+    return-type operation-name(argument-list);
+\end{verbatim}
+
+Each operation is converted directly into a client stub function and a service handler function. Operations are passed one or more arguments and may return a single type instance. The example interface contains a single operation declaration on line 12. Magpie supports a number of {\it basic types}, explained in section \ref{writingidl.parameter.types} All types used as operation parameters must either be one of the basic types, or be defined in terms of the basic types (for example, a {\tt struct} or {\tt typedef}). Note that the example uses a custom type, {\tt pd\_ref\_t}. This type must be specified in an imported header files, such as {\tt mytypes.h} on line 7.
+
+\subsection{Parameters}
+Unlike C functions, each parameter must be preceeded by its {\it direction}, which must be either {\bf in} or {\bf out}\footnote{Magpie does not currently support the OMG IDL {\tt inout} direction, but support for this feature is planned in a future release.}. Parameters of direction {\tt in} are guaranteed not to be modified by the service or the stub code, whereas parameters of direction {\tt out} may be modified by the service or by the stubs.
+
+\subsection{Parameter types}
+\label{writingidl.parameter.types}
+The basic types supported by Magpie are outlined in Figure \ref{fig.writingidl.parameter.types}. These represent the only types allowed in operation declarations, unless additional types are imported with the {\tt import} keyword described above.
+
+\begin{figure}
+\begin{tabularx}{\textwidth}{ll}
+\textbf{Type} & \textbf{Corresponding C type}\\
+{\tt void} & {\tt void} \\
+{\tt short} & {\tt short} \\
+{\tt unsigned short} & {\tt unsigned short}\\
+{\tt int} & {\tt int} \\
+{\tt unsigned int} & {\tt unsigned int}\\
+{\tt long} & {\tt long} \\
+{\tt unsigned long} & {\tt unsigned long} \\
+{\tt long long} & {\tt long long} \\
+{\tt unsigned long long} & {\tt unsigned long long} \\
+{\tt float} & {\tt float} \\
+{\tt double} & {\tt double} \\
+{\tt long double} & {\tt long double} \\
+{\tt char} & {\tt char} \\
+{\tt unsigned char} & {\tt unsigned char} \\
+{\tt wchar} & {\tt wchar\_t} \\
+{\tt boolean} & {\tt boolean} \\
+{\tt octet} & {\tt uint8\_t} \\
+{\tt fpage} & n/a \\
+\end{tabularx}
+\caption{Basic types supported by Magpie}
+\label{fig.writingidl.parameter.types}
+\end{figure}
+

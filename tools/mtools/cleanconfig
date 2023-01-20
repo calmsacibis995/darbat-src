@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Removes all autoconfig related files
+rm -f config.sub config.guess configure config.h.in

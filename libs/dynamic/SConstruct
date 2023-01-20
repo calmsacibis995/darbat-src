@@ -1,0 +1,4 @@
+Import("env")
+lib = env.MyLibrary("dynamic", LIBS=["libsa","libkern", "iokit", 
+	"iokitdrv", "c"])
+Return("lib")

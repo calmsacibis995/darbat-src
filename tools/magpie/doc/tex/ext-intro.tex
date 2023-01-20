@@ -1,0 +1,19 @@
+\chapter{Extending \magpie}
+
+This chapter, and subsequent chapters, explain Magpie's internals. They are intended for those interested in extending Magpie.
+
+\section{Major modules}
+
+The major modules of \magpie are described in Figure \ref{fig:magpie:dataflow}. Data structures are represented by square-edged boxes, and major classes (or class groups) are represented by rounded-edge boxes.
+
+The major sections in Magpie are the IDL parser, abstract syntax tree (AST) generator and AST annotator (labels 1 through 10), the type repository (label 8), the C++ parser and associated structure (labels 4, 6, and 9), the generator (label 11) and the templating system (label 12). 
+
+If you want to change Magpie to support a new output type on L4 (such as an architecture-specific optimisation), you will probably end up modifying templates, or creating new ones. If you want to support a different operating system or environment, you will probably modify templates and the generator. Magpie does not currently have the infrastructure to support more complicated things, such as type import from languages other than C or C++, or IDL formats other than CORBA.
+
+During a typical run, Magpie's IDL parser constructs an AST from the supplied IDL file. Any C or C++ headers referenced by the IDL file parsed separately. All types described in the IDL and in external headers are added to the type repository during the parsing process\footnote{Types must be added during parsing, because C++ is ambiguous without correct type information.}. The IDL AST is annotated with reference to the correct repository types. This annotated AST is supplied as input to a generator. The purpose of the generator is essentially to provide helper functions which provide information about the AST in a convenient form. The generator is used by templates to produce the appropriate output.
+
+\begin{figure}
+\includegraphics{fig/magpie-overview.eps}
+\caption{Data flow in \magpie. Rounded-edge boxes represent overall classes, square-edged boxes represent data structures.}
+\label{fig:magpie:dataflow}
+\end{figure}

@@ -1,0 +1,248 @@
+.\" Copyright (C) 1992, 1993, 1994, 1995, 1996 Free Software Foundation, Inc.
+.\" Copyright (C) 1998 Simon Winwood.
+.\"
+.\" Permission is granted to make and distribute verbatim copies of
+.\" this manual provided the copyright notice and this permission notice
+.\" are preserved on all copies.
+.\" 
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the entire
+.\" resulting derived work is distributed under the terms of a permission
+.\" notice identical to this one.
+.\" 
+.\" Permission is granted to copy and distribute translations of this manual
+.\" into another language, under the above conditions for modified versions,
+.\" except that this permission notice may be stated in a translation approved
+.\" by the Foundation.
+.\"
+.\" $Id: dite.1,v 1.2 2004/03/05 04:58:22 benjl Exp $
+.TH DITE 1 "7 Aug 2004" "DITE Version 1.0" "L4 Tools Manual"
+.SH NAME
+dite \- tool for creating multi-object images
+.SH SYNOPSIS
+
+.B dite
+.RB "[\|" \-hVvqdl "\|]" 
+.RB "[\|[\|" \-Rxr "\|]"  
+.RB "[\|" \-b\ \c 
+.I address\c
+\&\|] 
+.RB "[\|" \-E\ \c
+.I address\c
+\&\|] 
+.I filename\c
+\&\|]
+.RB "[\|" \-t\ \c
+.I format
+\&\|]
+.B \-o\ \c
+.I target
+
+.SH DESCRIPTION
+
+.B DITE 
+(\c
+.I Downloadable Image Tool Extended\c
+) is a tool for combining several object files (usually executables,
+but it isn't picky) into a single downloadable image.  This image is
+usually appended to a bootloader, or downloaded directly to the target
+machine.
+.PP
+.B DITE
+currently understands 
+.I ELF
+and raw  formats, although other formats can be added with relative ease.
+
+.SH OPTIONS
+.I DITE 
+options may be either the traditional POSIX one letter options, or the
+GNU style long options.  POSIX style options start with a single
+\*(lq\-\*(rq, while GNU long options start with \*(lq\-\-\*(rq.
+
+.SS "General Options"
+.TP
+.B \-h, \-\-help 
+Prints out a list of options and some usage examples.
+.TP
+.B \-V, \-\-version
+Prints out the name and version.
+.TP
+.B \-v, \-\-verbose
+Increases the verbosity level.  For example, displays the address and
+offset of images in the output image.
+.TP
+.B \-q, \-\-quiet
+Disables any non-error output.
+
+.LP
+.SS "Target Options"
+.TP 
+.B \-n, \-\-nodit
+Do not include a DIT header in the output image.
+.TP
+\fB\-t\fR format,\fB \-\-target\fR format
+Specifies the format of the output image.  This takes the form
+.IB object \- architecture \- endianness\c
+\&.  Note that partial target formats are allowed; the other
+information will be inferred from the first non-raw input file.  If
+this option is not included, the output format is that of the first
+non-raw input file.  For a complete list of available formats, execute 
+.B dite \-h\c
+\&.
+.TP
+\fB\-o\fR filename,\fB \-\-output\fR filename
+This specifies the output file.
+.TP
+\&\fB\-D\fR segment, \fB\-\-dit-segment\fR segment
+This specifies the segment in which the DIT header will be placed
+(starting from 0).  The default segment is the last segment.
+.TP
+\&\fB\-O\fR offset, \fB\-\-offset\fR offset
+.I  This option is excessively evil.
+This specifies the offset by which each segment will be moved.  This
+does not effect any data in the DIT header.
+.TP
+.B \-d, \-\-dump
+This prints the contents of the DIT segment to stdout.
+.TP
+.B \-l, \-\-link
+Prints the next free address in the image.
+.TP
+.B \-u, \-\-update-sigma0
+.I This option is L4 specific.
+This updates the kernel info page in the second segment of the output
+image.  This is used with \fB \-\-raw\fR so that sigma0 knows where to
+find the DIT page.  
+.PP
+.SS "Source File Options"
+.TP
+\&\fB\-a \fRpad, \fB\-\-align \fRpad
+This pads the input image with zeroes up to the specified alignment.
+.TP
+.B \-R. \-\-raw
+Specifies that the file will not be included in the output image
+as-is.
+.TP
+\&\fB\-e \fRaddress, \fB\-\-entry \fRaddress 
+Specifies the entry point for the image.  This is only required for
+those input formats which do not specify this information (i.e. raw).
+.TP
+\&\fB\-b\fR address, \fB\-\-base\fR address
+This specifies the base of the object.  This is different to
+\fB\-\-offset\fR in that it 
+.I does
+affect the data in the DIT header.  This option is primarily used with
+the 
+.B \-\-raw
+option.
+.TP
+\&\fB\-N \fRname, \fB\-\-name \fRname
+Specifies a specific name for this file. Otherwise the file's basename
+is used.
+
+.TP
+\&\fB\-M \fRvalue, \fB\-\-magic \fRvalue
+Sets this files magic to value. This defaults to 0. This can be used to store
+a pointer to some address other than the entry point.
+
+.TP
+\&\fB\-A  \fB\-\-phys-align
+Change the physical load address of this file so it lies at the end of
+the current image. This will relocate the image in physical memory, but will
+leave its virtual load address intact. The default is that the image is set
+to whatever physical address is encoded in the image.
+
+.TP
+.B \-x, \-\-execute
+This sets the execute flag in the DIT header.
+.TP
+.B \-r, \-\-resource
+This sets the resource flag in the DIT header.
+.TP
+.B \-k, \-\-kernel
+This sets the kernel flag in the DIT header.
+.TP
+.B \-s, \-\-sigma0
+This sets the sigma0 flag in the DIT header.
+.TP
+.B \-S, \-\-sigma1
+This sets the sigma1 flag in the DIT header.
+.TP
+.B \-i, \-\-root
+This sets the root flag in the DIT header.
+
+.SH NOTES
+
+For output formats which contain an entry point, the entry point of
+the first source file is used, if the target does not exist.  If the
+target does exist, its entry point is used.
+
+.SH EXAMPLES
+
+The following are examples of the usage of
+.B dite.
+.PP
+This is an example of how to create a file called 
+.I kernel
+from a file called 
+.I kernel64.  
+  Note the use of the 
+.B \-O
+flag; the PMON bootloader uses the virtual address field rather than
+the physical address field to load the image.  The 
+.B \-O
+flag specifies that the image needs to be loaded at 0xffffffff80000000
+plus the normal addresses.  
+
+.RS
+dite -t elf32-mips64-big -D 2 -O 0xffffffff80000000 -o kernel kernel64
+.RE
+
+This command takes the file 
+.I kernel
+generated in the previous example and adds the file
+.I serial
+specifying it as a initial server.
+
+.RS
+dite -o kernel-serial -O 0x8000000 kernel -x serial
+.RE
+.PP
+The following example creates an image called 
+.I kernel-serial
+containing the raw file 
+.I l4pal
+with an entry address of 0x200000 and a base address of 0x20000
+(i.e. it constitutes 1 segment in the output file at address
+0x200000), the file 
+.I sigma0
+and the file 
+.I serial,
+which is an initial server and the resource manager.
+
+.RS
+dite -R -e 0x200000 -b 0x200000 l4pal sigma0 -xr serial -o kernel-serial
+.RE
+
+.SH BUGS
+
+The 
+.B \-O
+flag is an abomination.  
+.PP
+DITE will silently allow overlapping images.
+
+.SH AUTHORS
+Simon Winwood <sjw@cse.unsw.edu.au>
+.PP
+Ben Leslie <benjl@cse.unsw.edu.au>
+.PP
+Nicholas FitzRoy-Dale <nfd@cse.unsw.edu.au>
+.PP
+The latest version of dite may be found at:
+
+.UR http://www.cse.unsw.edu.au/~sjw/code/dite/
+<http://www.cse.unsw.edu.au/~sjw/code/dite/>
+.UE
+.SH SEE ALSO
+.BR ld( 1 )

@@ -1,0 +1,67 @@
+Import("*")
+
+srcList=[]
+
+srcList += src_glob("bootstrap.cpp")  
+srcList += src_glob("bsearch.c") 
+srcList += src_glob("catalogue.cpp")
+srcList += src_glob("c++rem3.c")
+srcList += src_glob("dgraph.c")
+srcList += src_glob("kld_patch.c")
+srcList += src_glob("kext.cpp")
+srcList += src_glob("load.c")
+srcList += src_glob("mach.c")
+srcList += src_glob("misc.c")
+srcList += src_glob("mkext.c")
+srcList += src_glob("sort.c")
+srcList += src_glob("strrchr.c")
+srcList += src_glob("strstr.c")
+srcList += src_glob("vers_rsrc.c")
+
+# nope: Iguana should have this
+#srcList += src_glob("i386/*.s")
+
+cxxflags=["-D__BIG_ENDIAN__=0",
+		"-static",
+		"-fno-rtti",
+		"-fno-exceptions",
+		"-fcheck-new",
+		"-fpermissive",
+		"-fsigned-bitfields",
+		"-msoft-float",
+		"-D__LITTLE_ENDIAN__=1",
+		"-DKERNEL",
+		"-D__STATIC__",
+		"-DL4IOKIT",
+		"-DIOASSERT=1",
+		"-DKERNEL_PRIVATE=1"
+		]
+if env.toolchain_name == "apple":
+	cxxflags += ["-fapple-kext"]
+
+lib = env.MyLibrary("libsa", 
+	CCFLAGS=["-D__BIG_ENDIAN__=0",
+		"-D__LITTLE_ENDIAN__=1",
+		"-DKERNEL",
+		"-fsigned-bitfields",
+		"-msoft-float",
+		"-static",
+		"-DL4IOKIT",
+		"-DIOASSERT=1",
+		"-DKERNEL_PRIVATE=1",
+		"-D__STATIC__",
+		"-DTYPE_BOOL=0"],
+	CXXFLAGS=cxxflags,
+	CPPPATH=["#libs/xnuglue/xnu_include/include", 
+	"#libs/xnuglue/xnu_iclude/include/bsd", 
+	"#libs/xnuglue/xnu_include/include/EXTERNAL_HEADERS", 
+	"#libs/xnuglue/xnu_include/include/osfmk", 
+	"#libs/xnuglue/xnu_include/include/pexpert", 
+	"#libs/xnuglue/xnu_include/include/bsd", 
+	"#libs/iokit",
+	"#libs/libkern",
+	"#libs/xnuglue/xnu_include",
+	"#libs/libsa"], 
+	source=srcList,
+	LIBS=["c"])
+Return("lib")

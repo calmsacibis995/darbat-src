@@ -1,0 +1,63 @@
+#!/bin/sh - 
+
+## (c) Carlos Duarte ## Created: 18-Dec-96 ## Updated: 18-Dec-96 ##
+
+# main
+
+FAKE=
+DRIVE=a
+TOGGLE=0
+MDEL=:
+while [ "$1" ]
+do
+	case `echo z$1|cut -c2-` in 
+	-n) 	FAKE=echo ;; 
+	-d)	DRIVE=`echo $1|cut -c3-`
+		[ "$DRIVE" = "" ] && {
+			shift
+			DRIVE=$1
+			[ "$DRIVE" = "" ] && break
+		} ;; 
+	-t)	TOGGLE=1 ;;
+	-rm)	MDEL=mdel ;;
+	*)	break ;;
+	esac
+	shift
+done
+
+if [ $# -ne 1 ] ; then
+	echo "usage: $0 [-n] [-d drive] [-rm] [-t] <ndisks>"
+	exit 1
+fi
+
+ndisks=$1
+n=0
+dir=1
+
+while test $n -lt $ndisks
+do
+
+	while [ -d $dir ]
+	do
+		dir=`expr $dir + 1`
+	done
+
+	$FAKE mkdir $dir
+	$FAKE mcopy $DRIVE:\* $dir && $FAKE $MDEL $DRIVE:\*
+
+	if [ "$TOGGLE" = "1" ] ; then
+		if [ "$DRIVE" = "a" ] ; then
+			DRIVE=b
+		else
+			DRIVE=a
+		fi
+	else
+		echo Replace disk and press return
+		read ans
+	fi
+
+	n=`expr $n + 1`
+	dir=`expr $dir + 1`
+done
+
+exit 0

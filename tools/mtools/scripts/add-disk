@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# add-disk
+# Contributed by Tim Hoogasian (hoogs@usa.net)
+#
+#       Runs the commands to make Solaris locate a new disk that
+#       has been plugged in after the system was booted.
+#
+
+# This script can be used on a Solaris system to add a SCSI disk
+# without needing to reboot/reconfigure the system.  It's short and
+# simple, but it's quite handy -- and it saves you from having to
+# remember the individual commands.... :-)
+
+# You might also want to use the format.dat file if you don't have one
+# yet.  It is in this same mtools/scripts directory, and should be
+# stored in /etc, or appended to the existing format.dat file
+
+# All you have to do is attach the Jaz drive, check to make sure there
+# isn't SCSI address conflict (Zip and Jaz media tend to default to ID
+# number 5) power it up, run "add-disk", insert the media, and GO!
+
+
+/usr/sbin/drvconfig
+/usr/sbin/devlinks
+/usr/sbin/disks                 # or /usr/sbin/tapes for tapes
+/usr/ucb/ucblinks               # Compatibility links
+
+exit 0

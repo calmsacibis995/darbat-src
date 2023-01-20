@@ -1,0 +1,147 @@
+#!/usr/bin/env python2.4
+
+MEGA_T = []
+MEGA_D = []
+
+
+def TDS(str):
+	return '<TD style="border: 1px solid black; padding:0em;">'+str+'</TD>'+"\n"
+
+def TD(str):
+	return '<TD>'+str+'</TD>'+"\n"
+
+def TR(*str):
+	return '<TR>'+''.join(*str)+'</TR>'+"\n"
+
+def regress(data,A,B):
+	global MEGA_T
+	def dot(X,Y):
+		temp = zip(X,Y)
+		return sum([v[0]*v[1] for v in temp])
+
+	T = zip(*data)
+	MEGA_T.append(T)
+
+	X = T[A]
+	Y = T[B]
+	N = float(len(X))
+	xbar = sum(X)/N
+	ybar = sum(Y)/N
+	Sxx = dot(X,X)
+	Sxy = dot(X,Y)
+
+	M = (N*Sxy-xbar*ybar)/(N*Sxx-xbar*xbar)
+	a = ybar - M*xbar
+
+	return (a,M)
+
+from numarray import array
+
+class Test:
+	def __init__(self, name):
+		self.name = name
+		self.counters = []
+		self.indices = []
+		self.runs = []
+	
+	def AddCounter(self, name, units):
+		self.counters.append((name,units))
+		
+	def AddIndex(self, name, units):
+		self.indices.append((name,units))
+
+	def AddRun(self, *indices):
+		retval = Run(indices)
+		self.runs.append(retval)
+		return retval
+
+	def Regression(self):
+		if len(self.indices) != 1:
+			return []
+		data = reduce(lambda x,y:x+y,[zip(*(run.data + [(([run.indices[0]])*len(run.data[0]))])) for run in self.runs])
+		MEGA_D.append(data)
+		return [regress(data,-1,i)[1] for i in xrange(len(self.counters))]
+
+	def WriteToFile(self, output_file):
+		theHtml = ''
+		theHtml += '<h1>'+self.name+'</h1>'+"\n"
+		unitCosts = self.Regression()
+		theHtml += '<table border=1 style="text-align:center">'
+		if(unitCosts == []):
+			theHtml += TR([TD(i[0]+'<br>('+i[1]+')') for i in self.indices]+[TD(c[0]+' ('+c[1]+')') for c in self.counters])
+		else:
+			theHtml += TR([TD(i[0]+'<br>('+i[1]+')') for i in self.indices]+[TD(c[0]+' ('+c[1]+') UnitCost='+("%.2f" % (unitCosts[j],))) for j,c in enumerate(self.counters)])
+
+
+		runData = zip(*[run.TupleRepr() for run in self.runs])
+		index = 0
+
+		theHtml += '<tr>'
+
+		for i in self.indices:
+			theHtml += '<td><table style="border-collapse: collapse; border: 1px solid white; padding:0em; width: 100%; text-align:center">'
+			theHtml += TR(TDS('&nbsp'))
+			theHtml += ''.join([TR(TDS(str(v))) for v in runData[index]])
+			theHtml += "</table>\n</td>\n"
+			index = index+1
+		for i in self.counters:
+			theHtml += '<td><table style="border-collapse: collapse; border: 1px solid white; padding:0em; width: 100%; text-align:center">'
+			theHtml += TR(TDS('Mean') + TDS('Std Dev') + TDS('Median'))
+			for counter in runData[index]:
+				theHtml += TR([TDS("%.1f" % v) for v in counter])
+			theHtml += "</table>\n</td>\n"
+			index = index+1
+
+		theHtml += '</tr></table>'
+
+		output_file.write(theHtml)
+
+def merge(lists, list):
+	if lists == []:
+		[lists.append([e]) for e in list]
+		return
+	temp = list.__iter__()
+	for l in lists:
+		l.append(temp.next())
+
+class Run:
+	def __init__(self, indices):
+		self.indices = indices
+		self.data = []
+	
+	def AddData(self, *values):
+		merge(self.data, values)
+
+	def Means(self):
+		return [array(k).mean() for k in self.data]
+
+	def Medians(self):
+		cut = (len(self.data[0])-1)/2
+		return [array(sorted(k)[cut:-cut]).mean() for k in self.data]
+
+	def StdDevs(self):
+		return [array(k).stddev() for k in self.data]
+
+	def TupleRepr(self):
+		return list(self.indices) + zip(self.Means(), self.StdDevs(), self.Medians())
+
+def NewTest(*args):
+	test = Test(*args)
+	tests.append(test)
+	return test
+
+def PrintTests():
+	f = open('stats.html','a')
+
+import sys
+a = sys.argv
+del a[0]
+
+for file in a:
+	tests = []
+	exec(open(file,'r'))
+	output_file = open(file+'.html','w')
+	output_file.write('<html><body>')
+	[t.WriteToFile(output_file) for t in tests]
+	output_file.write('</body></html>')
+	output_file.close()

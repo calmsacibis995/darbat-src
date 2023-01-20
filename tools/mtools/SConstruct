@@ -1,0 +1,23 @@
+Import("tool_prefix")
+import os
+
+mtools = Program("mtools",
+                 Split("""buffer.c codepage.c codepages.c config.c copyfile.c devices.c
+                 dirCache.c directory.c direntry.c expand.c fat.c fat_free.c file.c
+                 file_name.c filter.c floppyd_io.c force_io.c hash.c init.c
+                 llong.c match.c mainloop.c mattrib.c mbadblocks.c mcat.c
+                 mcd.c mcopy.c mdel.c mdir.c mdoctorfat.c mdu.c mformat.c
+                 minfo.c misc.c missFuncs.c mk_direntry.c mlabel.c mmd.c
+                 mmount.c mmove.c mpartition.c mshowfat.c mzip.c
+                 mtools.c patchlevel.c plain_io.c precmd.c privileges.c
+                 scsi.c signal.c stream.c streamcache.c
+                 subdir.c unixdir.c toupper.c tty.c vfat.c xdf_io.c"""),
+                 CPPDEFINES={"SYSCONFDIR":'\\\"%s/etc\\\"' % tool_prefix[1:]},
+                 CPPFLAGS=["-Wall"])
+
+install = []
+targets = ["mpartition", "mformat", "mcopy", "mmd"]
+for target in targets:
+    install += InstallAs(tool_prefix + os.sep + "bin" + os.sep + target, mtools)
+
+Return("install")

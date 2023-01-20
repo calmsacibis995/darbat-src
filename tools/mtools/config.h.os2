@@ -1,0 +1,61 @@
+#ifndef _ALL_SOURCE
+#undef _ALL_SOURCE
+#endif
+#define HAVE_SYS_WAIT_H
+#undef inline
+#undef _MINIX
+#undef _POSIX_1_SOURCE
+#undef _POSIX_SOURCE
+#define RETSIGTYPE void
+#define TIME_WITH_SYS_TIME 1
+#undef TM_IN_SYS_TIME
+#undef USE_XDF
+#undef USING_VOLD
+#undef DEBUG
+#define HAVE_ATEXIT
+#define HAVE_FLOCK
+#define HAVE_GETPASS
+#define HAVE_GETTIMEOFDAY
+#undef HAVE_LOCKF
+#define HAVE_MEMCPY
+#define HAVE_MEMSET
+#define HAVE_RANDOM
+#undef HAVE_SETEUID
+#define HAVE_SRANDOM
+#define HAVE_STRCASECMP
+#define strcasecmp stricmp
+#define HAVE_STRCHR
+#define HAVE_STRCSPN
+#define HAVE_STRDUP
+#define HAVE_STRERROR
+#define HAVE_STRNCASECMP
+#define strncasecmp strnicmp
+#define HAVE_STRPBRK
+#define HAVE_STRRCHR
+#define HAVE_STRSPN
+#define HAVE_STRTOUL
+#define HAVE_TZSET
+#define HAVE_UTIME
+#undef HAVE_UTIMES
+#define HAVE_FCNTL_H
+#define HAVE_GETOPT_H
+#undef HAVE_LIBC_H
+#define HAVE_LIMITS_H
+#define HAVE_MALLOC_H
+#define HAVE_MEMORY_H
+#define HAVE_SIGNAL_H
+#define HAVE_STDLIB_H
+#define HAVE_STRING_H
+#define HAVE_SYS_FILE_H
+#define HAVE_SYS_IOCTL_H
+#define HAVE_SYS_PARAM_H
+#define HAVE_SYS_SIGNAL_H
+#define HAVE_SYS_STAT_H
+#undef HAVE_SYS_TERMIO_H
+#undef HAVE_SYS_TERMIOS_H
+#define HAVE_SYS_TIME_H
+#define HAVE_TERMIO_H
+#define HAVE_TERMIOS_H
+#define HAVE_UNISTD_H
+#define HAVE_UTIME_H
+#undef HAVE_LIBSUN

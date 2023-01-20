@@ -1,0 +1,4 @@
+Import("env")
+env.Append(CPPDEFINES=[("__L4_ARCH__", env.machine.arch), "L4_ARCH_%s" % env.machine.arch.upper()])
+lib = env.KengeLibrary("l4", LIBS=[])
+Return("lib")

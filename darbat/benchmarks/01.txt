@@ -1,0 +1,186 @@
+test = NewTest("nulltrap_test Dec 12 2005 14:19:24")
+test.AddCounter("time", "usec")
+test.AddCounter("time", "cpu cycles")
+test.AddIndex("Iterations", "count")
+run = test.AddRun(100)
+run.AddData(8170, 3223773)
+run.AddData(8081, 3189564)
+run.AddData(8081, 3189393)
+run.AddData(8411, 3297753)
+run.AddData(8155, 3219084)
+run = test.AddRun(1000)
+run.AddData(80379, 32108265)
+run.AddData(80257, 32037534)
+run.AddData(80463, 32119272)
+run.AddData(80497, 32133069)
+run.AddData(80259, 32038443)
+run = test.AddRun(10000)
+run.AddData(806710, 322636581)
+run.AddData(804419, 321702345)
+run.AddData(803803, 321455502)
+run.AddData(807539, 322949628)
+run.AddData(803666, 321400521)
+run = test.AddRun(100000)
+run.AddData(8049224, 3219641676)
+run.AddData(8051967, 3220721145)
+run.AddData(8048641, 3219390747)
+run.AddData(8047921, 3219102666)
+run.AddData(8052050, 3220753824)
+run = test.AddRun(1000000)
+run.AddData(80501122, 32200401060)
+run.AddData(80506049, 32202366525)
+run.AddData(80502329, 32200865820)
+run.AddData(80501233, 32200449804)
+run.AddData(80501698, 32200635960)
+test = NewTest("mach_getpid_test Dec 12 2005 14:19:24")
+test.AddCounter("time", "usec")
+test.AddCounter("time", "cpu cycles")
+test.AddIndex("Iterations", "count")
+run = test.AddRun(100)
+run.AddData(9599, 3796155)
+run.AddData(9266, 3663342)
+run.AddData(9263, 3662226)
+run.AddData(9622, 3805641)
+run.AddData(9204, 3638637)
+run = test.AddRun(1000)
+run.AddData(91734, 36650358)
+run.AddData(95602, 38151252)
+run.AddData(91781, 36669114)
+run.AddData(91720, 36644832)
+run.AddData(91788, 36672111)
+run = test.AddRun(10000)
+run.AddData(916559, 366575994)
+run.AddData(920148, 368015868)
+run.AddData(916480, 366548571)
+run.AddData(916906, 366696801)
+run.AddData(920110, 368000739)
+run = test.AddRun(100000)
+run.AddData(9179163, 3671599491)
+run.AddData(9179094, 3671594172)
+run.AddData(9179400, 3671694585)
+run.AddData(9178445, 3671334549)
+run.AddData(9179403, 3671695683)
+run = test.AddRun(1000000)
+run.AddData(91799265, 36719661996)
+run.AddData(91786786, 36714648636)
+run.AddData(91804532, 36721746954)
+run.AddData(91795077, 36717964956)
+run.AddData(91798384, 36719287416)
+test = NewTest("bsd_flock_test Dec 12 2005 14:19:24")
+test.AddCounter("time", "usec")
+test.AddCounter("time", "cpu cycles")
+test.AddIndex("Iterations", "count")
+run = test.AddRun(100)
+run.AddData(25316, 10078875)
+run.AddData(25100, 9996876)
+run.AddData(25330, 10066365)
+run.AddData(25075, 9987318)
+run.AddData(25421, 10102968)
+run = test.AddRun(1000)
+run.AddData(251163, 100422153)
+run.AddData(251122, 100405629)
+run.AddData(254835, 101890953)
+run.AddData(250982, 100349856)
+run.AddData(250973, 100323918)
+run = test.AddRun(10000)
+run.AddData(2512333, 1004886054)
+run.AddData(2513889, 1005489873)
+run.AddData(2513908, 1005497838)
+run.AddData(2513497, 1005333471)
+run.AddData(2513333, 1005267420)
+run = test.AddRun(100000)
+run.AddData(25139087, 10055587131)
+run.AddData(25140506, 10056159360)
+run.AddData(25139834, 10055890350)
+run.AddData(25139035, 10055548620)
+run.AddData(25136332, 10054489617)
+run = test.AddRun(1000000)
+run.AddData(251378075, 100551187116)
+run.AddData(251381686, 100552631436)
+run.AddData(251374161, 100549598481)
+run.AddData(251379316, 100551683205)
+run.AddData(251375495, 100550154888)
+test = NewTest("ipc_test Dec 12 2005 14:19:24")
+test.AddCounter("time", "usec")
+test.AddCounter("time", "cpu cycles")
+test.AddIndex("Iterations", "count")
+run = test.AddRun(100)
+init called!
+tester called!
+run.AddData(29914, 11922633)
+init called!
+tester called!
+run.AddData(30240, 12052647)
+init called!
+tester called!
+run.AddData(29863, 11902149)
+init called!
+tester called!
+run.AddData(29689, 11832282)
+init called!
+tester called!
+run.AddData(30438, 12131928)
+run = test.AddRun(1000)
+init called!
+tester called!
+run.AddData(179456, 71739288)
+init called!
+tester called!
+run.AddData(178803, 71477541)
+init called!
+tester called!
+run.AddData(178917, 71523378)
+init called!
+tester called!
+run.AddData(178890, 71512209)
+init called!
+tester called!
+run.AddData(178622, 71405082)
+run = test.AddRun(10000)
+init called!
+tester called!
+run.AddData(1681398, 672515640)
+init called!
+tester called!
+run.AddData(1675219, 670044312)
+init called!
+tester called!
+run.AddData(1675140, 670012524)
+init called!
+tester called!
+run.AddData(1674114, 669602376)
+init called!
+tester called!
+run.AddData(1677674, 671025987)
+run = test.AddRun(100000)
+init called!
+tester called!
+run.AddData(16642020, 6656765031)
+init called!
+tester called!
+run.AddData(16640998, 6656355630)
+init called!
+tester called!
+run.AddData(16641999, 6656755959)
+init called!
+tester called!
+run.AddData(16656312, 6662481156)
+init called!
+tester called!
+run.AddData(16634596, 6653794752)
+run = test.AddRun(1000000)
+init called!
+tester called!
+run.AddData(166429981, 66571948683)
+init called!
+tester called!
+run.AddData(166345722, 66538245312)
+init called!
+tester called!
+run.AddData(166305395, 66522114081)
+init called!
+tester called!
+run.AddData(166299429, 66519727785)
+init called!
+tester called!
+run.AddData(166304987, 66521950983)

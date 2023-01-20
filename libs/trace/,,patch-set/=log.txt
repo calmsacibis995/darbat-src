@@ -1,0 +1,12 @@
+Revision: libtrace--mainline--0.1--patch-1
+Archive: benjl@cse.unsw.edu.au--priv-01
+Creator: Carl van Schaik <Carl.vanSchaik@nicta.com.au>
+Date: Mon Oct 10 18:12:52 EST 2005
+Standard-date: 2005-10-10 08:12:52 GMT
+Modified-files: include/trace/tracebuffer.h
+New-patches: benjl@cse.unsw.edu.au--priv-01/libtrace--mainline--0.1--patch-1
+Summary: Fix - remove C++
+Keywords: libtrace
+
+
+

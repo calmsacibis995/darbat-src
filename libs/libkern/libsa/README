@@ -1,0 +1,7 @@
+/*
+ * This is NOT the libsa that was in the xnu directory.
+ *
+ * It is only here because we need to bootstrap the kernel linker, 
+ * and due to the wonders of ld linking, it doesn't get picked up if
+ * it is in a separate directory.
+ */ 

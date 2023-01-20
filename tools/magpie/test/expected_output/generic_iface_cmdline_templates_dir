@@ -1,0 +1,28 @@
+TEMPLATES COMING FROM THE TESTER DIRECTORY
+
+Interface uuidiface annotations: 
+  uuid(37)
+
+
+Interface singlethreadiface annotations: 
+  singlethreaded()
+
+
+Interface twoannotation annotations: 
+  singlethreaded()
+
+  uuid(38)
+
+
+Interface multiargs annotations: 
+  componentthreads(1, 5, 10)
+
+
+Interface funcuuids annotations: 
+  uuid(27)
+Function funcuuids_pagefault annotation: [('kernelmsg', 'idl4::pagefault')]
+Function funcuuids_test annotation: [('mymodifier', ())]
+Function funcuuids_test2 annotation: [('mymodifier2', ())]
+Function funcuuids_test3 annotation: [('multione', ()), ('multitwo', ()), ('multithree', 'scoped::name'), ('multifour', 37)]
+
+ 

@@ -1,0 +1,9 @@
+Available targets:
+ * corba_tester
+ * cplusplus_modifier
+ * idl4_arm_biguuid_l4v4
+ * idl4_generic_biguuid_l4v4
+ * idl4_generic_debug_l4v4
+ * idl4_generic_l4v4
+ * v4nicta
+ * v4nicta_modifier

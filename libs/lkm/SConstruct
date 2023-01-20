@@ -1,0 +1,13 @@
+Import("env")
+testobj = env.Object("tests/testmod.c")
+# XXX: bogus for now
+#raw_files = ["testmod.o"]
+#env.add_files(raw_files)
+lib = env.MyLibrary("lkm", 
+	CCFLAGS=["-D__LITTLE_ENDIAN__=1", "-D__BIG_ENDIAN__=0", "-static",
+	"-DMACHO_NO_UNDERSCORES=0",
+	"-fno-strict-aliasing"], 
+	LIBS=["c", "mach-o", "elf"])
+#env.add_files("build/iguana/libs/lkm/tests/testmod.o")
+#env.add_files("libs/lkm/tests/testmod_macho.o")
+Return("lib")

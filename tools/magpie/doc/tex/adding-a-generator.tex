@@ -1,0 +1,98 @@
+\chapter{Adding a generator}
+This chapter describes the process of adding a generator to \magpie. The preferred way to do this is to create a separate executable to produce your custom output. There are several stages to this process:
+\begin{itemize}
+\item Main function, command-line parsing
+\item Target class
+\item Input parser
+\item Generator
+\item Templates
+\item Output
+\end{itemize}
+
+Fortunately, unless you're doing something very complicated, the above doesn't amount to a lot of code.
+
+\section{Main function and command-line parsing}
+Figure \ref{fig:code:iguanaidl} demonstrates a simple command-line parser and main function. This code simply uses a module which emulates IDL4's command-line interface. If you prefer not to export an IDL4-like interface, you should implement an option parser using {\tt MultiIDLOptionParser} from {\tt multi\_idl.py} as a base.
+
+\begin{figure}
+\begin{verbatim}
+#!/usr/bin/env python2.3
+
+import multi_idl
+from targets.iguana.iguanatarget import IguanaTarget, IguanaOptions
+
+if __name__ == '__main__':
+        multi_idl.generic_main(cmdline_parser =
+				multi_idl.MultiIDLOptionParser,
+                targetclass = IguanaTarget,
+                optionclass = IguanaOptions)
+\end{verbatim}
+\caption{Main module for {\tt iguana\_idl.py}}
+\label{fig:code:iguanaidl}
+\end{figure}
+
+\section{Target class}
+The target class, passed as {\tt targetclass} in Figure \ref{fig:code:iguanaidl}, acts as a controller. The target class must construct an input parser, a generator, and an output class, which together perform the rest of the work.
+
+If all you want to do is provide an additional generator, the code is reasonably straightforward. An example for Iguana, which adds an ``iguana debug'' generator, is shown in Figure \ref{fig:code:iguanatarget}.
+\begin{figure}
+\begin{verbatim}
+import sys
+
+import output
+from generator import v4_construct as idl4_generator_construct
+from iguana_generator import construct as igdebug_generator_construct
+from targets.shared.target import GenericTarget
+from targets.shared.inputparser import ImportingASTGenerator
+from targets.shared.options import GenericOptions
+
+class IguanaOptions(GenericOptions):
+    def __init__(self):
+        GenericOptions.__init__(self)
+        # Add the generator we support: the Iguana debug generator.
+        self.extend_option_enum('generator', ['igdebug'])
+
+class IguanaTarget(GenericTarget):
+    def __init__(self, iguana_options):
+        GenericTarget.__init__(self, iguana_options)
+
+    generators = {'idl4': idl4_generator_construct,
+            'igdebug': igdebug_generator_construct}
+    def setup(self):
+        self.generator = self.generators[self.options['generator']]()
+        self.output = output.generic_construct(self.options)
+        self.inputparser = ImportingASTGenerator(self.options,
+				self.type_registry)
+\end{verbatim}
+\caption{Iguana example target}
+\label{fig:code:iguanatarget}
+\end{figure}
+
+\section{Input parser}
+The input parser's task is to produce an IDL AST. The generic code, in {\tt targets/shared/inputparser.py}, simply instantiates a parser and runs it over the input IDL file. The generic code also supports import from C++ headers using a mix-in class. You won't necessarily need to change this for your generator --- note that code in Figure \ref{fig:code:iguanatarget} just uses the generic version. If you do, you may still be able to make use of the C++ import mix-in. Using it is simple; check the generic code, in particular the class {\tt ImportingASTGenerator}, for details.
+
+\section{Generator}
+The generator class walks an IDL AST in order to produce code. If you are extending or only slightly modifying the output of the V4 generic generator, you may be able to overload the V4 generator and add your own code using ``hooks'', discussed below.
+
+If you cannot overload the V4 generic class, you will need to provide a class that can generate both client and server stubs. Probably the best way to begin is to examine the V4 generator, {\tt generator/v4generator.py}. This implements a ``generator controller'' class, which creates the relevant client or server class.
+
+\section{Debugging}
+\magpie has several debugging features which may be selectively enabled to help track down parsing or tree-walking bugs. To enable them, modify the appropriate Boolean in {\tt debugging.py}. For example, to display IDL parse information and output the syntax tree, set the 'idlparser' flag to True.
+
+To output your own debug information, add an appropriate function and relevant flag to {\tt debugging.py}, or re-use an existing one if appropriate. The current set of debugging flags is shown in Figure \ref{fig:table:debuggingflags}.
+
+\begin{figure}
+\begin{tabularx}{\textwidth}{lX}
+\textbf{Flag}&\textbf{Meaning}\\
+\hline
+c++ &Display C++ parse information. Print the C++ parse tree\\
+castwalker &Messages produced while walking the C++ AST to add types to the type registry\\
+import &Messages from the C++ type import handler, in the input parser\\
+annotate &Messages produced during type annotation\\
+generator &Messages produced while running the generator\\
+iguana\_generator &Special-purpose debug flag for the Iguana debug generator\\
+idlparser &Display IDL parse information. Print the IDL parse tree.\\
+\end{tabularx}
+\caption{\magpie debug flags}
+\label{fig:table:debuggingflags}
+\end{figure}

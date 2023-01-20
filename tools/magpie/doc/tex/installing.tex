@@ -1,0 +1,52 @@
+\chapter{Installation}
+This chapter covers installation and testing of Magpie. Most of the instructions assume a Unix-alike system, such as Linux, but Windows is also briefly discussed.
+
+\section{Obtaining Magpie}
+Released versions of Magpie may be found on Magpie's official homepage at the Distributed Systems group of UNSW: \url{http://www.disy.cse.unsw.edu.au/Software/Magpie} \footnote{If you are a member of the DiSy group at UNSW, development versions of Magpie may be checked out from the DiSy Arch repository using the repository name ``magpie--mainline''}.
+
+\section{Prerequisites}
+You will need Python 2.3 or higher, and an installation of the {\tt dparser} Python library.
+
+\subsection{Installation on Linux-based systems}
+Python comes standard on most Linux systems --- {\tt python -V} will tell you the version. If your system does not have Python installed, it should be available in your distribution. As a last resort, Python source code and RPM packages are available on \url{http://www.python.org}.
+
+To install Dparser, check out a copy from \url{http://dparser.sourceforge.net/} and follow the installation instructions. Note that you will need Python development headers in order to compile Dparser's Python extension. For Debian Linux, this means you will need the {\tt python-dev} package.
+
+\subsection{Installation on Windows}
+Install Python using the official Windows installer at \url{http://www.python.org}. Install Dparser using the Windows binary at \url{http://staff.washington.edu/sabbey/py\_dparser/}.
+
+\section{Testing}
+When Dparser is successfully installed, you may test Magpie by running a self-test.
+
+\begin{verbatim}
+$ ./magpidl4.py test/input/simple.idl4
+\end{verbatim}
+
+If Magpie is working correctly, it will write client interface stubs to stdout.
+
+To perform a full set of self-tests, run the test suite. The test suite may take several minutes to execute.
+
+\begin{verbatim}
+$ python test/test.py
+\end{verbatim}
+
+If you are planning on using Magpie with the Iguana system, you may run an extended set of self-tests using Iguana's header files by passing appropriate flags to the tester. Run {\tt python test/test.py --help} for more information.
+
+\section{Installing Magpie}
+Magpie may be run in-place, or you may install it. To install magpie, run the installer:
+
+\begin{verbatim}
+$ python install.py
+\end{verbatim}
+
+By default, Magpie is installed to {\tt /usr/local/magpie}. Run the installer with the {\tt --help} option for instructions on changing this location. You do not need to run the installer as root, provided this installation directory is writable by the installer.
+
+\subsection{Make Magpie run faster}
+The first time Magpie is run, it creates two sets of parser tables --- one for its IDL parser, and one for its C++ parser. It stores these tables in the directory in which the {\tt magpie.py} or {\tt magpidl4.py} resides. If these tables cannot be written, they will be recreated each time, resulting in slower operation. Therefore, it is a good idea to run Magpie's self-tests after installation.
+
+\section{Uninstalling Magpie}
+Magpie may be uninstalled by removing the installation directory or by running the installer. By default, the installer takes care not to remove files if they have changed since installation.
+
+\begin{verbatim}
+$ python install.py --uninstall
+\end{verbatim}

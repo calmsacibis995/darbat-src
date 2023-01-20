@@ -1,0 +1,2 @@
+drive a: file="A:" exclusive
+drive b: file="B:" exclusive

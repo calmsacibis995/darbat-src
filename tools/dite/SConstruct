@@ -1,0 +1,36 @@
+import os.path, glob
+
+opts = Options()
+opts.Add("prefix", "Installation directory", "/usr/local")
+opts.Add("build", "Directory in which to build the source", "build")
+
+env = Environment(options = opts)
+Help("""Type: 'scons install' to build and install dite.
+Options:""" + opts.GenerateHelpText(env))
+
+def src_glob(search):
+    """Src glob is used to find source files easily e.g: src_glob("src/*.c"),
+    the reason we can't just use glob is due to the way SCons handles out
+    of directory builds."""
+    dir = os.path.dirname(search)
+    if dir != "":
+        dir = dir + os.sep
+    src_path = Dir('.').srcnode().abspath
+    files = glob.glob(src_path + os.sep + search)
+    files = map(os.path.basename, files)
+    ret_files = []
+    for file in files:
+        ret_files.append(dir + file)
+    return ret_files
+
+# We export it so the sub-SConstruct files can use it
+Export("src_glob")
+
+env.SConscript("src/SConstruct", build_dir="build", duplicate=0)
+
+env.Install("${prefix}" + os.path.sep + "bin", "${build}" + os.path.sep + "dite")
+env.Install("${prefix}" + os.path.sep + "man/man1", "doc/dite.1")
+
+env.Alias("install", "${prefix}" + os.path.sep + "bin")
+env.Alias("install", "${prefix}" + os.path.sep + "man/man1")
+env.Default("build")

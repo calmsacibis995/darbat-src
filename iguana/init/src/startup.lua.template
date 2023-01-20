@@ -1,0 +1,44 @@
+-- Iguana startup script
+print("Iguana init starting")
+print("Initialise naming: ", initialise_naming());
+print("Initialise trace: ", initialise_trace());
+print("Initialise timer: ", initialise_timer());
+print("Initialise serial: ", initialise_serial());
+--print("Initialise block: ", initialise_block());
+
+print("\nInitial servers started")
+
+{{if shell:
+start_server("iguana_shell")
+fi}}
+
+{{if example:
+print("Loading {{?example}}")
+fi}}
+
+{{if example == "cap":
+cap_example()
+fi}}
+
+{{if example and example not in ["cap"]:
+start_server("{{?example}}_example")
+fi}}
+
+{{if linux:
+print("Loading linux")
+start_linux()
+fi}}
+
+{{if darbat:
+start_server("darbat")
+fi}}
+
+{{if l4iokit:
+start_server("iguana_iokit")
+fi}}
+
+{{if macho_hello:
+start_server("macho_hello")
+fi}}
+
+return 0

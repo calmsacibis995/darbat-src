@@ -1,0 +1,12 @@
+Import("*")
+cppdefines = []
+
+if (args.get("restrict_vm", False)):
+    cppdefines.append(("CONFIG_RESTRICTED_VM", 1))
+if (args.get("lowmemory", False)):
+    cppdefines.append(("CONFIG_LOWMEMORY", 1))
+
+env.Append(CPPDEFINES = cppdefines);
+lib = env.KengeLibrary("iguana", LIBS=["c", "l4", "circular_buffer", "range_fl", "ll", "l4e", "mutex"])
+
+Return("lib")

@@ -1,0 +1,10 @@
+Import("*")
+# XXX: using CCFLAGS overrides the argument line, so you don't get -static!
+# XXX: this plays bad with the Darwin gcc + darwin ld.  What is the correct
+# XXX: way to do this?  There are a couple more places in the IOKit port
+# XXX: that will require this surgery ..
+# XXX: -gl
+lib = env.MyLibrary("b_plus_tree", buildname=args["buildname"], LIBS=["c"], CCFLAGS="-static -include %s" % args["conf"])
+if len(lib) > 1:
+    env.Depends(lib[1], "#%s" % args["conf"])
+Return("lib")

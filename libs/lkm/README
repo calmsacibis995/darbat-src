@@ -1,0 +1,37 @@
+/*
+ * liblkm
+ *
+ * For loading and unloading code dynamically at run-time
+ *
+ * Geoffrey Lee < glee at cse unsw edu au >
+ */
+
+Outstanding problems presently: we need a bit of OS support.
+
+* The OS should provide the unloaded binary of the executables, otherwise
+  modules have no way of knowing where the symbols are located.  If this is
+  not possible, then at least the headers.
+
+* The OS should provide a mechanism to free this memory back into a free
+  memory pool, if this functionality is not required, at present only the 
+  headers need to be parsed.
+
+* The OS needs to provide a mechanism that allocates memory for the modules
+  in which a way that the references can be resolved given architectual
+  limits (in terms of the bits that you can put into a branch and link / 
+  call instruction, for example)
+
+* In the case of Iguana, it needs to be clear what binaries can be provided
+  to any executables wishing to utilize LKMs.  Specifically, should it be
+  allowed to touch on the headers of other executables, or just its own?
+
+* The Apple Mach-O compiler will prepend an underscore (_) for C symbols.
+  Other compilers (such as a Linux ELF compiler) will not do this.  
+  MACHO_NO_UNDERSCORES can be defined and set to non-zero at compile-time
+  to automatically try and get rid of the leading underscore symbol. 
+  If it is not defined, then the symbols will be added to to the symbol
+  hash table "as-is", i.e., with the leading underscore intact.
+
+Iguana has been hacked to do this (see libl4e and Iguana init) but this is 
+not very well-done and needs revision.
+

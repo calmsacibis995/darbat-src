@@ -1,0 +1,8 @@
+Import("*")
+obj = env.KengeProgram("memsection_example", LIBS=["iguana", "c", "gcc", "l4", "naming", "l4e", "mutex", "ll"])
+
+env["EXPECT_TEST_DATA"] = [("TESTING MEMORY SECTIONS", None),
+			   ("TESTING NORMAL CREATES", None),
+			   ("Done a lot of creates", None)]
+
+Return("obj")

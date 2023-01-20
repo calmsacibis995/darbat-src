@@ -1,0 +1,113 @@
+ktrace - MACH_PRIVATE only function headers?  Apple API private?
+
+MAXNAMLEN defines in ufs and isofs clash. They are the same, but this sux.
+
+
+insque and remque collide in osfmk and bsd in the kern_sync.c file.
+I took out the osfmk ones, but I dunno if that'll work good...
+
+__OSAbsoluteTimePtr is in ...
+#include <libkern/OSBase.h>
+
+memset is in
+#include <string.h>
+
+IOInterruptHandler is in
+#include <IOKit/IOPlatformExpert.h>
+
+
+Whatever happens the mach_vm_* and vm_* all seem to want to be in the same 
+header file?
+
+For some reason is_suser() is in vm/vm_protos.h ???
+
+
+WTF is a wait_queue_sub?!
+
+
+panic is in
+#include <kern/debug.h>
+
+PE_boot_args is in
+#include <igcompat/compat.h>
+
+OSAddAtomic in
+#include <libkern/OSAtomic.h>
+
+
+
+Don't even think that sysctl's will work - especially machine dep. ones.
+Nor uipc_domains
+Nor pseudo device inits
+Nor vlan or 'bond' interfaces
+vnode_pager has been disabled
+
+
+Finding stuff
+-------------
+
+Filesystem config table (vfsconflist) is in bsd/vfs/vfs_conf.c
+
+Block device config table (bdevsw) is in bsd/dev/i386/conf.c but it's empty!
+
+
+
+TODO
+----
+
+* Work out how to page in Iguana (ugh)
+
+* Find where the vm_object is constructed during the whole named creation guy
+
+* Implement our own vm_object struct to cope with it all.
+
+
+------
+
+Done:
+
+Impl. some system calls
+
+Files are all memory mapped VM
+
+Trying to get (read-only) files from the file system
+
+Hacking/paging Iguana
+
+~~~~~~~~~~~~  Mach VM  ~~~~~~~~~~~~
+
+vm_external_module is hacked out for now
+
+How important is the MP model? 
+	-- currently ignoring osfmk/i386/cpu.c
+
+vm_map_pmap_is_empty -- disabled until we have more better pmap support
+
+
+~~~~~~~~~~~~  HFS  ~~~~~~~~~~~~
+
+What the hell is a '\p' character??
+
+
+~~~~~~~~~~~~  Mach Threads & Tasks  ~~~~~~~~~~~~
+
+Could be salvageable? Hard to say...
+
+The way init started is odd... why post AST_BSD as a flag and 
+do the bsdinit_task on thread_resume? Why not do it eagerly?
+
+
+
+~~~~~~~~~~~~  Getting up to Iguana Release  ~~~~~~~~~~~~
+
+* Elf32 junk (fork elf32?)
+* assert.c fix
+
+
+~~~~~~~~~~~~  Multi-threaded kernel  ~~~~~~~~~~~~
+
+* commpage_populate is disabled? ask Tom?
+
+
+
+

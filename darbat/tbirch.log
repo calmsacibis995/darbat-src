@@ -1,0 +1,11 @@
+put task_importance in igcompat/src/hacks.c to do nothing
+hacked vm_map to pass the actual pmap (grep for TGB), this will need to be reverted once chuck fixes reverse-lookups on pmaps
+commented out a call to "machine_thread_set_state" in thread.c, as is this is hard to do
+
+* need to implement reference/dirty bits
+    done a bit, need to fix up the remove and protect routines, also the ones that do mappings
+* need to implement pmap reference counting and destroying
+* batch L4_Unmaps for certain pmap operations
+* less crap stubs (fix up kernel side)
+* fix commpage ugliness
+* fix ncurses

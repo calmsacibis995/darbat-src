@@ -1,0 +1,122 @@
+\documentclass[a4paper,11pt,twoside,dvips]{report}
+
+%%% $Id: report.tex,v 1.4 2005/02/13 23:48:06 gernot Exp $
+
+\newif \ifDraft         \Drafttrue
+
+%%% Hyperlinks embed links for references in the PDF output (both for
+%%% internal as well as external links).
+\newif \ifhyperlinks    \hyperlinkstrue
+%%% When using this you should use \autoref{label} instead of
+%%% Section~\ref{label}. This will make ``Section'' part of the link, not
+%%% just the number.
+
+\usepackage[margin=25mm]{geometry}
+%\usepackage[margin=25mm,left=33mm]{geometry}	% maybe better for double sided
+\usepackage[dvips]{graphicx}
+        \setkeys{Gin}{keepaspectratio=true,clip=true,draft=false,
+                        width=\linewidth}
+\usepackage[colour,nicta]{disy}
+\usepackage{times,cite,url,fancyhdr,tabularx,xspace}
+\ifDraft
+  \usepackage{changebar}
+\else
+  \newcomment{\cbstart}{\relax}
+  \newcomment{\cbend}{\relax}
+  \newcomment{\cbdelete}{\relax}
+\fi
+\urlstyle{rm}
+\renewcommand{\ttdefault}{cmtt}	% CM rather than courier for \tt
+
+\ifDraft
+  \usepackage{draftcopy}
+  \newcommand{\Comment}[1]{\textbf{\textsl{#1}}}
+\else
+  \newcommand{\Comment}[1]{\relax}
+\fi
+
+\ifhyperlinks
+        \usepackage[pagebackref,hyperindex,bookmarks]{hyperref}
+	\hypersetup{linktocpage,colorlinks}
+\else   
+        \providecommand{\href}[2]{\url{#2}}
+\fi
+
+\pagestyle{fancyplain}
+\lhead[\fancyplain{}{\sl\thepage}]{\fancyplain{}{\sl\rightmark}}
+\chead{}
+\rhead[\fancyplain{}{\sl\leftmark}]{\fancyplain{}{\sl\thepage}}
+\lfoot[\fancyplain{\sl\thepage}{}]{}
+\cfoot{\ifDraft\textsf{NICTA Confidential}\fi}
+\rfoot[]{\fancyplain{\sl\thepage}{}}
+
+\newcommand{\magpie}{Magpie\xspace}
+
+\begin{document}
+  
+  \ifhyperlinks
+    %% Capitalisation of cross references
+    \renewcommand{\chapterautorefname}{Chapter}
+    \renewcommand{\sectionautorefname}{Section}
+    \renewcommand{\subsectionautorefname}{Section}
+    \renewcommand{\subsubsectionautorefname}{Section}
+    \renewcommand{\appendixautorefname}{Appendix}
+    \renewcommand{\Hfootnoteautorefname}{Footnote}
+    %% Commands for index
+    \newcommand{\Htextbf}[1]{\textbf{\hyperpage{#1}}}
+  \fi
+
+  \title{Magpie --- An Extensible Interface Compiler}
+
+
+  \author{Nicholas FitzRoy-Dale}
+  \AuthorEmail{nfd@cse.unsw.edu.au}
+  \date{\small Document $\relax$Revision: 2 $\relax$
+    $\relax$Date: 2005/07/1 22:31:24 $\relax$}
+
+  \maketitle
+  \urlstyle{sf}
+  \thispagestyle{empty}
+
+ % \begin{abstract}
+ %   \pagenumbering{roman}
+ %   Write your abstract here
+ %   \vfill
+
+%    \noindent
+ %   %\copyright~2004 National ICT Australia Ltd
+ % \end{abstract}
+  \setcounter{page}{1}
+
+
+  \tableofcontents
+
+  \cleardoublepage
+  \setcounter{page}{1}
+  \pagenumbering{arabic}
+
+\input{introduction}
+
+\input{installing}
+
+\input{usage}
+
+\input{writing-idl.tex}
+
+\input{stubs.tex}
+
+\input{ext-intro}
+
+\input{templating}
+
+\input{templating-tutorial}
+
+%\input{arch}
+%\input{adding-a-generator}
+%\input{generators}
+
+  \cleardoublepage
+  \bibliographystyle{alpha}
+  \bibliography{defs-abbrev,dist,os,inform}
+
+\end{document}

@@ -1,0 +1,17 @@
+Import("*")
+template_env = {"linux" : 0, "example" : None, "shell" : 0, "darbat" : 0, "l4iokit" : 0 , "macho_hello" : 0 }
+if args.get("shell", False):
+    template_env["shell"] = 1
+if args.get("darbat", False):
+    template_env["darbat"] = 1
+if args.get("l4iokit", False):
+    template_env["l4iokit"] = 1
+if args.get("wombat", False):
+    template_env["linux"] = 1
+if args.get("macho_hello", False):
+    template_env["macho_hello"] = 1
+if args.get("example", None) is not None:
+    template_env["example"] = args.get("example")
+obj = env.MyProgram("iguana_init", TEMPLATE_ENV=template_env, LIBS=["iguana", "l4e", "naming", "lua", "mutex"])
+env.add_files([File("src/startup.lua")])
+Return("obj")

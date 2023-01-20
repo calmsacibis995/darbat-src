@@ -1,0 +1,25 @@
+# 
+# /etc/format.dat file for Accessing ZIP and Jaz disks from Solaris
+#
+# Contributed by Tim Hoogasian (thoogasi@us.oracle.com)
+#
+
+disk_type = "Iomega ZIP 100" \
+        : ctlr = SCSI \
+        : ncyl = 2406 : acyl = 2 : pcyl = 2408 : nhead = 2 \
+        : nsect = 40 : rpm = 3600 : bpt = 20480
+
+# Default Zip floppy part'n map : block 0-192480 (entire disk)
+#
+partition = "Iomega ZIP 100" \
+        : disk = "Iomega ZIP 100" : ctlr = SCSI \
+        : 2 = 0, 192480
+##
+disk_type = "Jaz 1GB" \
+        : ctlr = SCSI \
+        : ncyl = 1018 : acyl = 2 : pcyl = 1020 : nhead = 64 \
+        : nsect = 32 : rpm = 3600 : bpt = 16384
+
+partition = "Jaz 1GB" \
+        : disk = "Jaz 1GB" : ctlr = SCSI \
+        : 2 = 0,2084864

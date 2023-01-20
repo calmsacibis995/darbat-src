@@ -1,0 +1,8 @@
+AppleIntelClock
+
+This was taken from the IOKit source tree.
+
+It sits here because nothing ever explicitly calls this.  Hence, due to the
+wonders of ld, it gets dropped during link, and during run-time when it
+actually _tries_ to initialize this dynamically, it shits itself.
+

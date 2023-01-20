@@ -1,0 +1,38 @@
+Import("*")
+import os
+srcList = src_glob("AppleI386GenericPlatform/*.cpp") + \
+	src_glob("AppleI386PCI/*.cpp") + \
+	src_glob("IOPCIFamily/*.cpp") + \
+	src_glob("AppleAPIC/*.cpp") + \
+	src_glob("AppleSMBIOS/*.cpp") + \
+	src_glob("IOStorageFamily/*.cpp") + \
+        src_glob("IOHIDFamily/IOHIDSystem/*.cpp") + \
+        src_glob("IOHIDFamily/IOHIDFamily/*.c") + \
+        src_glob("IOHIDFamily/IOHIDFamily/*.cpp") + \
+        src_glob("IOHIDFamily/IOHIDSystem/IOHIDDescriptorParser/*.c") + \
+        src_glob("IOUSBFamily/AppleUSBHub/Classes/*.cpp") + \
+        src_glob("IOUSBFamily/IOUSBFamily/Classes/*.cpp") + \
+	src_glob("IOUSBFamily/AppleUSBEHCI/Classes/*.cpp") + \
+        src_glob("IOUSBFamily/AppleUSBUHCI/Classes/*.cpp") + \
+	src_glob("IOUSBFamily/IOUSBHIDDriver/Classes/*.cpp") + \
+        src_glob("IOUSBFamily/IOUSBUserClient/Classes/*.cpp") + \
+        src_glob("IOUSBFamily/AppleUSBMergeNub/Classes/*.cpp") + \
+	src_glob("IOUSBFamily/IOCompositeDriver/Classes/*.cpp") + \
+	src_glob("IOSBMassStorageClass/*.cpp")  + \
+	src_glob("IOSCSIArchitectureModelFamily/IOSCSIArchitectureModel/*.cpp") + \
+	src_glob("IOSCSIArchitectureModelFamily/IOSCSIBlockCommands/*.cpp") 
+
+# nope.
+	# this is the pio version.  doesn't work with sata, and it hasn't
+	#src_glob("IOUSBFamily/AppleUSBOpticalMouse/*.cpp") + \
+	# been adapted for our l4iokit intr latency hack.
+	#src_glob("AppleGenericPCATA/*.cpp")  + \
+
+# caveats: IOATABlockStorage seems to be an old version.
+
+# we are not buliding iograhics for now we just need its header file
+
+#this whole list of cflags is a hack.
+lib = env.MyLibrary("iokitdrv", LIBS=["naming", "l4", "c"], CPPPATH=["#libs/iokitdrv/IOUSBFamily/AppleUSBOpticalMouse", "#libs/iokitdrv/IOUSBFamily/IOUSBHIDDriver/Headers", "#libs/iokitdrv/IOUSBFamily/AppleUSBOHCI/Headers", "#libs/iokitdrv/IOUSBFamily/AppleUSBHub/Headers", "#libs/iokitdrv/IOSCSIArchitectureModelFamily/IOSCSIArchitectureModel", "#libs/iokitdrv/IOSCSIArchitectureModelFamily/UserClientLib", "#libs/iokitdrv/IOSCSIArchitectureModelFamily", "#libs/iokitdrv/IOUSBFamily/AppleUSBMergeNub/Headers", "#libs/iokitdrv/IOUSBCompositeDriver/Headers", "#libs/iokitdrv/IOUSBFamily/IOUSBFamily/Headers", "#libs/iokitdrv/IOUSBFamily/AppleUSBUHCI/Headers", "#libs/iokitdrv/IOUSBFamily/AppleUSBEHCI/Headers", "#libs/iokitdrv/IOUSBFamily/IOUSBUserClient/Headers", "#libs/iokitdrv/IOUSBFamily","#libs/iokitdrv/IONetworkingFamily", "#libs/iokitdrv/AppleIntel8255x", "#libs/iokitdrv/IOACPIFamily", "#libs/iokitdrv/IOATABlockStorage/UserClient", "#libs/iokitdrv/IOATABlockStorage/UserClientLib", "#libs/iokitdrv/IOATABlockStorage", "#libs/iokitdrv/AppleAC97Audio/AppleAC97AudioDriver", "#libs/iokitdrv/AppleAC97Audio/IOAC97Family", "#libs/iokitdrv/IOStorageFamily", "#libs/iokitdrv/IOATAFamily", "#libs/iokitdrv/AppleIntelPIIXATA", "#libs/iokitdrv/AppleAPIC", "#libs/iokitdrv/AppleSMBIOS", "#libs/iokitdrv/IOAudioFamily", "#libs/iokitdrv/Apple16X50Serial", "#libs/iokitdrv/IOSerialFamily", "#libs/iokitdrv/AppleI386GenericPlatform", "#libs/iokitdrv/hacks/include", "#libs/iokitdrv/IOHIDFamily/IOHIDSystem", "#libs/iokitdrv/IOHIDFamily/IOHIDFamily", "#libs/iokitdrv/AppleI386PCI", "#libs/iokitdrv/IOPCIFamily", "#libs/iokitdrv/ApplePS2Controller", "#libs/xnu_glue/include/osfmk" , "#libs/xnu_glue/include/EXTERNAL_HEADERS", "#libs/xnu_glue/include/pexpert", "#libs/xnu_glue/include/bsd" ,  "#libs/iokit", "#libs/libkern"], SRCDIR="Kernel", CCFLAGS=" -Wno-multichar -w -DIOASSERT=0 -D__LITTLE_ENDIAN__=1 -static -g -nostdinc -nostdlib -fno-builtin -finline -fno-keep-inline-functions -fsigned-bitfields -Wno-undef -Wpointer-arith -D__i386__ -DPAGE_SIZE_FIXED -O2 -fschedule-insns -DXNU_KERNEL_PRIVATE=1 -DAPPLE -DNeXT -DKERNEL_PRIVATE -D__MACHO__=0 -Dvolatile=__volatile -DLIBKERN -DKERNEL -DLIBKERN_KERNEL_PRIVATE -DOSALLOCDEBUG=0 -Wall -fno-common  -Ilibkern -DKERNEL_PRIVATE -DL4IOKIT -w", CXXFLAGS=" -D__MBUF_PROTO=mbuf_t -DPRIVATE=1 -Wno-undef -DBSD_BUILD=1 -DXNU_KERNEL_PRIVATE=1 -D__LITTLE_ENDIAN__=1 -fno-rtti -fno-exceptions -fcheck-new -fpermissive   -static -g -nostdinc -nostdlib -fno-builtin -finline -fno-keep-inline-functions -fsigned-bitfields -Wpointer-arith -D__i386__ -DPAGE_SIZE_FIXED -DIOASSERT=0 -O2 -fschedule-insns -DAPPLE -D__APPLE__=1 -DNeXT -DKERNEL_PRIVATE -D__MACHO__=0 -Dvolatile=__volatile -DL4IOKIT -DKERNEL -DDRIVER_PRIVATE -Wall -fno-common -DIOMATCHDEBUG=1 -DIOALLOCDEBUG=1 -w", source=srcList)
+
+Return("lib")

@@ -1,0 +1,14 @@
+Import("tool_prefix", "build_dir")
+import os
+
+src_path = Dir('.').srcnode().abspath
+build_cmd = "cd %s; %s/configure; make" % (build_dir, src_path)
+Command(["grub/grub", "stage1/stage1", "stage2/stage2", "stage2/fat_stage1_5"], [], build_cmd)
+install = []
+install += Install(tool_prefix + os.sep + "bin", "grub/grub")
+install += Install(tool_prefix + os.sep + "boot/grub", "stage1/stage1")
+install += Install(tool_prefix + os.sep + "boot/grub", "stage2/stage2")
+install += Install(tool_prefix + os.sep + "boot/grub", "stage2/fat_stage1_5")
+                 
+Return("install")
+

@@ -1,0 +1,3 @@
+Import("*")
+obj = env.MyProgram("preempt_example", LIBS=["timer", "iguana", "c", "gcc"])
+Return("obj")

@@ -1,0 +1,3 @@
+Import("env")
+lib = env.MyLibrary("bit_fl", LIBS=["c"])
+Return("lib")

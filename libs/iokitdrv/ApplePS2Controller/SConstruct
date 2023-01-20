@@ -1,0 +1,8 @@
+Import("*")
+import os
+# -w flag is hack
+# fix up .s files
+srcList = src_glob("*.cpp")
+#this whole list of cflags is a hack.
+lib = env.MyLibrary("ApplePS2Controller", LIBS=["iokit", "c"], CPPPATH=["#libs/xnu_glue//include/osfmk",  "#libs/xnu_glue/include/ApplePS2Controller", "#libs/xnu_glue/include/bsd", "#libs/xnu_glue/include/pexpert", "#libs/iokit", "#libs/libkern"], SRCDIR="Kernel", CCFLAGS="-D__BIG_ENDIAN__=0 -D__LITTLE_ENDIAN__=1 -static -g -nostdinc -nostdlib -fno-builtin -finline -fno-keep-inline-functions -msoft-float -fsigned-bitfields -Wpointer-arith -D__i386__ -DPAGE_SIZE_FIXED -O2 -fschedule-insns -DAPPLE -DNeXT -DKERNEL_PRIVATE -D__MACHO__=0 -Dvolatile=__volatile -DLIBKERN -DKERNEL -DLIBKERN_KERNEL_PRIVATE -DOSALLOCDEBUG=0 -Wall -fno-common  -Ilibkern -DKERNEL_PRIVATE -DL4IOKIT -w", CXXFLAGS="-D__LITTLE_ENDIAN__=1 -D__BIG_ENDIAN__=0 -fno-rtti -fno-exceptions -fcheck-new -fpermissive   -static -g -nostdinc -nostdlib -fno-builtin -finline -fno-keep-inline-functions -msoft-float -fsigned-bitfields -Wpointer-arith -D__i386__ -DPAGE_SIZE_FIXED -DIOASSERT=0 -O2 -fschedule-insns -DAPPLE -DNeXT -DKERNEL_PRIVATE -D__MACHO__=0 -Dvolatile=__volatile -DL4IOKIT -DKERNEL -DDRIVER_PRIVATE -Wall -fno-common -DIOMATCHDEBUG=1 -DIOALLOCDEBUG=1 -w", SRCS=srcList)
+Return("lib")

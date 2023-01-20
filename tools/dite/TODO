@@ -1,0 +1,60 @@
+# about this file:
+# To allow easy processing by scripts, the entries below should have the 
+# following form.
+# Open things (i.e. nobody is working on them, still outstanding). Priority is
+# low, medium or high.
+# {bug number}
+# - Open, priority
+# * file1, file2
+# @ description
+#
+# {bug number}
+# In progress things (assigned, outstanding)
+# - Assigned, priority, author
+# * file1, file2
+# @ description
+#
+# Finalised:
+# {bug number}
+# - Finalised, priority, author, release, date, [time taken]
+# * file1, file2, file3
+# @ desription
+#
+# use '#' on the start of a line for a comment.
+# Perhaps I should add 'date added', but that would be anal ;)
+
+These aren't in any real order ... 
+
+{1}
+- Open, low
+* aclocal.m4, configure 
+@ Fix up the CVS archive so that commit only commits human-generated files
+ (i.e. drop aclocal and friends).
+
+{2}
+- Open, medium
+* src/coff.c, include/coff.h
+@ Add coff support
+
+{3}
+- Open, high
+* 
+@ Test whether it works with MIPS.
+
+{4}
+- Open, medium
+* elf32.c
+@ Fix support for elf32. (perhaps have 1 elf file, which gets included into
+ a single file which actually does the dirty stuff).
+ 
+{5}
+- Open, high
+* README, INSTALL
+@ Actually make these non-breaindead to read, and useful.  Might also add
+some documentation on the internals of dite (so people can modify it if they
+want ... not that difficult to understand from code tho.)
+
+{6}
+- Open, high
+*
+@ Change the names to dite from edit ;)

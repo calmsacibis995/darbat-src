@@ -1,0 +1,3 @@
+Import("*")
+lib = env.MyLibrary("obj_alloc", LIBS=["c", "range_fl", "util"])
+Return("lib")

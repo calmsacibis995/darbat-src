@@ -1,0 +1,3 @@
+Import("*")
+obj = env.MyProgram("kickstart", LIBS=["c", "elf"], LINKSCRIPTS=[File("kickstart.ld").srcnode()], LINKFLAGS=["-Ttext=00800000","-Tbss=00808000"])
+Return("obj")

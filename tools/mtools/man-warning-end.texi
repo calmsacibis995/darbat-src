@@ -1,0 +1,42 @@
+@c for man page version only
+@unnumbered See Also
+Mtools' texinfo doc
+@unnumbered Viewing the texi doc
+This manpage has been automatically generated from mtools's texinfo
+documentation. However, this process is only approximative, and some
+items, such as crossreferences, footnotes and indices are lost in this
+translation process.  Indeed, these items have no appropriate
+representation in the manpage format.  Moreover, not all information has
+been translated into the manpage version.  Thus I strongly advise you to
+use the original texinfo doc.  See the end of this manpage for
+instructions how to view the texinfo doc.
+
+@itemize @bullet
+@item
+To generate a printable copy from the texinfo doc, run the following
+commands:
+@example
+    ./configure; make dvi; dvips mtools.dvi
+@end example
+
+@item
+To generate a html copy,  run:
+@example
+    ./configure; make html
+@end example
+A premade html can be found at:
+@file{http://mtools.linux.lu}
+and also at:
+@file{http://www.tux.org/pub/knaff/mtools}
+
+@item
+To generate an info copy (browsable using emacs' info mode), run:
+@example
+    ./configure; make info
+@end example
+@end itemize
+
+The texinfo doc looks most pretty when printed or as html.  Indeed, in
+the info version certain examples are difficult to read due to the
+quoting conventions used in info.
+

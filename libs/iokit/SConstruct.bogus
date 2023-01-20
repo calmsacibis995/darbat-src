@@ -1,0 +1,14 @@
+Import("*")
+import os
+# -w flag is hack
+# this whole list of cflags is a fucking hack
+# fix libkern build...
+srcList = src_glob("Kernel/*.cpp") + src_glob("Kernel/*.c") + \
+	src_glob("Families/IOSystemManagement/*.cpp") + \
+	src_glob("Drivers/platform/drvAppleIntelClock/*.cpp") + \
+	src_glob("*.cpp")
+
+# could get into trouble using too much iguana shit here that is mostly
+# copatible but notreally
+lib = env.MyLibrary("iokit", LIBS=["c", "libkern",  "xnu_glue"], CPPPATH=["#libs/xnu_glue/include/EXTERNAL_HEADERS", "#libs/libkern" , "#libs/iokit", "#libs/xnu_glue/include/osfmk", "#libs/xnu_glue/include/pexpert", "#libs/xnu_glue/include/bsd"], SRCS=srcList, CCFLAGS=" -DXNU_KERNEL_PRIVATE=1 -DUSLOCK_DEBUG=0 -DIOASSERT=1 -DMACH_ASSERT=1 -D__BIG_ENDIAN__=0 -D__LITTLE_ENDIAN__=1 -static -g -nostdinc -nostdlib -fno-builtin -finline -fno-keep-inline-functions -msoft-float -fsigned-bitfields -Wpointer-arith -D__i386__ -DPAGE_SIZE_FIXED -O2 -fschedule-insns -DAPPLE -DNeXT -DKERNEL_PRIVATE -D__MACHO__=0 -Dvolatile=__volatile -DLIBKERN -DKERNEL -DLIBKERN_KERNEL_PRIVATE -DOSALLOCDEBUG=0 -Wall -fno-common  -Ilibkern -DKERNEL_PRIVATE -DL4IOKIT -w", CXXFLAGS=" -DXNU_KERNEL_PRIVATE=1 -DL4IOKIT -DUSLOCK_DEBUG=0 -D__LITTLE_ENDIAN__=1 -D__BIG_ENDIAN__=0 -fno-rtti -fno-exceptions -fcheck-new -fpermissive   -static -g -nostdinc -nostdlib -fno-builtin -finline -fno-keep-inline-functions -msoft-float -fsigned-bitfields -Wpointer-arith -D__i386__ -DPAGE_SIZE_FIXED -DIOASSERT=0 -O2 -fschedule-insns -DAPPLE -DNeXT -DKERNEL_PRIVATE -D__MACHO__=0 -Dvolatile=__volatile -DIOKIT -DKERNEL -DDRIVER_PRIVATE -Wall -fno-common -DIOMATCHDEBUG=1 -DIOALLOCDEBUG=1 -w" )
+Return("lib")

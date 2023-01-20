@@ -1,0 +1,18 @@
+Import("*")
+
+cppdefines = []
+
+"""
+# This won't work for now because although we compile
+# the library with these defines, we also need to compile anything
+# linking against the library which isn't currently practical
+
+if args.get("number_type") == "int":
+    cppdefines.append(("LUA_NUMBER", "long"))
+    cppdefines.append(("LUA_NUMBER_SCAN", "\\\"%lu\\\""))
+    cppdefines.append(("LUA_NUMBER_FMT", "\\\"%lu\\\""))
+    cppdefines.append("LUA_CONV_INT")
+"""
+
+lib = env.KengeLibrary("lua", LIBS=["c"], CPPDEFINES=env["CPPDEFINES"] + cppdefines)
+Return("lib")

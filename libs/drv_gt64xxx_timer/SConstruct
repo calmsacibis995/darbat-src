@@ -1,0 +1,3 @@
+Import("env")
+lib = env.MyLibrary("drv_gt64xxx_timer", LIBS=["c", "driver"])
+Return("lib")

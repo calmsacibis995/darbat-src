@@ -1,0 +1,5 @@
+# Note: you should only use this library for
+# libgcc.  We use NetBSD parts, so everything is BSD-licensed...
+Import("env")
+lib = env.MyLibrary("gcc", LIBS=[])
+Return("lib")

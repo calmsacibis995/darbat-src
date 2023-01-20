@@ -1,0 +1,134 @@
+Import("*")
+import os
+# -w flag is hack
+# this whole list of cflags is a hack
+# fix libkern build...
+srcList = src_glob("Kernel/*.cpp") + src_glob("Kernel/*.c") + \
+	src_glob("Families/IOSystemManagement/*.cpp") + \
+	src_glob("Drivers/platform/drvAppleIntelClock/*.cpp") + \
+	src_glob("*.cpp") + \
+	src_glob("bsddev/IOKitBSDInit.cpp") + \
+	src_glob("hacks/*.cpp")
+
+	# nope.
+	# src_glob("bsddev/*.cpp")
+
+ccflags=["-DXNU_KERNEL_PRIVATE=1",
+	"-DUSLOCK_DEBUG=0",
+	"-D__BIG_ENDIAN__=0",
+	"-DIOASSERT=1",
+	"-DMACH_ASSERT=1",
+	"-DTYPE_BOOL=0",
+	"-DIOALLOCDEBUG=0",
+	"-D__LITTLE_ENDIAN__=1",
+	"-static",
+	"-g",
+	"-nostdinc",
+	"-nostdlib",
+	"-fno-builtin",
+	"-finline",
+	"-fno-keep-inline-functions",
+	"-msoft-float",
+	"-fsigned-bitfields",
+	"-Wpointer-arith",
+	"-Di386",
+	"-D__i386__",
+	"-DPAGE_SIZE_FIXED",
+	"-O2",
+	"-fschedule-insns",
+	"-DAPPLE",
+	"-DNeXT",
+	"-DKERNEL_PRIVATE",
+	"-D__MACHO__=0",
+	"-Dvolatile=__volatile" ,
+	"-DLIBKERN",
+	"-DKERNEL",
+	"-DLIBKERN_KERNEL_PRIVATE",
+	"-DOSALLOCDEBUG=0",
+	"-Wall",
+	"-fno-strict-aliasing",
+	"-fno-common",
+	"-Ilibkern",
+	"-DKERNEL_PRIVATE",
+	"-DL4IOKIT",
+	"-w"]
+
+
+# FIXME: pass this through the build system
+quiet = os.getenv("QUIETMODE")
+if not quiet == None:
+	ccflags += ["-DQUIETMODE"]
+
+cxxflags=["-DPRIVATE",
+	"-DKERNEL",
+	"-DXNU_KERNEL_PRIVATE=1",
+	"-DL4IOKIT",
+	"-DUSLOCK_DEBUG=0",
+	"-D__BIG_ENDIAN__=0",
+	"-D__LITTLE_ENDIAN__=1",
+	"-fno-rtti",
+	"-fno-exceptions",
+	"-fcheck-new",
+	"-fpermissive",
+	"-static",
+	"-g",
+	"-nostdinc",
+	"-nostdlib",
+	"-fno-builtin",
+	"-finline",
+	"-fno-keep-inline-functions",
+	"-msoft-float",
+	"-fsigned-bitfields",
+	"-Wpointer-arith",
+	"-Di386",
+	"-D__i386__",
+	"-DPAGE_SIZE_FIXED",
+	"-DIOASSERT=0",
+	"-O2",
+	"-fschedule-insns",
+	"-D__APPLE_API_PRIVATE",
+	"-DAPPLE",
+	"-DNeXT",
+	"-DKERNEL_PRIVATE",
+	"-D__MACHO__=0",
+	"-Dvolatile=__volatile",
+	"-DIOKIT",
+	"-DKERNEL",
+	"-DDRIVER_PRIVATE",
+	"-Wall",
+	"-DMACH_ASSERT=1",
+	"-fno-common",
+	"-fno-strict-aliasing",
+	"-w"]
+if env.toolchain_name == "apple":
+	cxxflags += ["-fapple-kext"]
+
+# work out how verbose we should be
+debug_flags = []
+if( args.get("verbose_iokit", "false" ) ):
+	debug = 1
+	debug_flags += ["-DVERBOSE_IOKIT"]
+else:
+	debug = 0
+	
+debug_flags += [ "-DIOMATCHDEBUG=%s" % debug, 
+		 "-DIOALLOCDEBUG=%s" % debug ]
+
+ccflags += debug_flags
+cxxflags += debug_flags
+
+# could get into trouble using too much iguana shit here that is mostly
+# copatible but notreally
+lib = env.MyLibrary("iokit", 
+	LIBS=["c","iguana"], 
+	CPPPATH=["#libs/xnuglue/xnu_include/include", 
+	"#libs/xnuglue/xnu_include/include/EXTERNAL_HEADERS", 
+	"#libs/xnuglue/xnu_include/include/osfmk", 
+	"#libs/xnuglue/xnu_include/include/pexpert", 
+	"#libs/xnuglue/xnu_include/include/bsd", 
+	"#libs/libkern", 
+	"#libs/iokit"], 
+	source=srcList, 
+	CCFLAGS=ccflags,
+	CXXFLAGS=cxxflags)
+Return("lib")

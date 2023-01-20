@@ -1,0 +1,65 @@
+Import("*")
+import os
+
+public_headers = ["#libs/c/include", "#libs/c/arch_include/%s" % env.arch]
+if env.testenv:
+    public_headers += ["#libs/c/test"]
+
+cppdefines = []
+files = []
+
+if "malloc_debug" in args and args["malloc_debug"] == "yes":
+    cppdefines.append("CONFIG_MALLOC_DEBUG")
+if "malloc_debug_internal" in args and args["malloc_debug_internal"] == "yes":
+    cppdefines.append("CONFIG_MALLOC_DEBUG_INTERNAL")
+if "malloc_instrument" in args and args["malloc_instrument"] == "yes":
+    cppdefines.append("CONFIG_MALLOC_INSTRUMENT")
+
+filesystem = "null"
+if "filesystem" in args:
+    filesystem = args["filesystem"]
+
+libs = ["gcc"]
+if args["system"] in ["l4_rootserver", "iguana_server"]:
+    cpppath = [env.libs["l4"][0]]
+    libs.append("l4")
+elif args["system"] == "iguana":
+    # FIXME: (benjl) Ouch, libiguana and libc are mutually
+    # dependant, I can't actually express this relationship
+    # so we have this hack here...
+    cpppath = [env.libs["l4"][0], "#libs/iguana/include"]
+    libs.append("mutex")
+    libs.append("iguana")
+    libs.append("naming")
+elif args["system"] == "xen":
+    libs.append("xen")
+else:
+    cpppath = []
+   
+if env.arch == "alpha":
+    cpppath.append("#libs/l4/include")
+
+src = src_glob("src/*.c") + \
+      src_glob("src/fs-%s/*.c" % filesystem) + \
+      src_glob("src/sys-%s/*.c" % args["system"]) + \
+      src_glob("src/sys-%s/arch-%s/*.c" % (args["system"], env.arch)) + \
+      src_glob("src/arch-%s/*.S" % env.arch)
+
+if env.testenv == 1:
+    src += src_glob("test/*.c")
+    src += src_glob("test/fs-%s/*.c" % filesystem)
+    env.add_files([File(x) for x in src_glob("test/fs-%s/data/*" % filesystem)])
+    cpppath += ["#libs/check/include"]
+
+libc = env.StaticLibrary('c', src,
+                         CPPDEFINES=env["CPPDEFINES"] + cppdefines)
+libc = libc[0]
+
+crt = env.StaticObject(src_glob("crt/sys-%s/arch-%s/crt0.S" % (args["system"], env.arch)),
+                       ASFLAGS=env["CCFLAGS"])
+
+if args["system"] in ["l4_rootserver", "iguana"]:
+    Depends(crt, env.libs["l4"][1])
+
+lib = (public_headers, libc, "#" + os.path.dirname(libc.path), crt, libs, files)
+Return("lib")

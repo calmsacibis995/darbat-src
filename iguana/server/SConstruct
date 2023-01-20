@@ -1,0 +1,20 @@
+Import("*")
+
+cppdefines = []
+if args.get("caps", True):
+    cppdefines.append(("ENABLE_CAPS", 1))
+if args.get("restrict_vm", False):
+    cppdefines.append(("CONFIG_RESTRICTED_VM", 1))
+if args.get("lowmemory", False):
+    cppdefines.append(("CONFIG_LOWMEMORY", 1))
+if args.get("testfewthreads", False):
+    cppdefines.append(("CONFIG_TEST_FEW_THREADS", 1))
+if args.get("testiguana", False):
+    cppdefines.append(("CONFIG_TEST_IGUANA", 1))
+
+obj = env.MyProgram("iguana",
+                    LIBS=["c", "l4", "l4e", "hash", "bit_fl",
+                          "ll", "circular_buffer", "range_fl", "util",
+                          "obj_btree", "queue"],
+                    EXTRA_CPPDEFINES = cppdefines)
+Return("obj")

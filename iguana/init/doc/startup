@@ -1,0 +1,20 @@
+This init system is now scripted using lua.
+
+iguana/init/src/startup.lua.template is the base startup script. It is
+a template that is compiled to "startup.lua" which is then saved in
+the dite and interpretted at startup by init.
+
+The use of the template is to allow the correct example to be
+started. The template language is fairly straight forward:
+
+Conditionally produce output based on status of 'x':
+
+{{if x:
+<output>
+if}}
+
+Include the value of variable `example' in the output:
+
+print("Loading {{?example}}")
+
+The values of the variable are controlled from iguana/init/SConstruct.

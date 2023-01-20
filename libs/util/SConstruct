@@ -1,0 +1,3 @@
+Import("env")
+lib = env.MyLibrary("util", LIBS=["c"])
+Return("lib")

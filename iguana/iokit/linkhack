@@ -1,0 +1,53 @@
+/*
+ * I copied most of this shamelessly from the output of objdump in the
+ * non-linker script version.  XXX
+ */
+SECTIONS
+{
+	.text : { *(.text*) }
+
+	. = ALIGN(16);
+
+	.rodata : { *(.rodata*) }
+
+	. = ALIGN(32);
+
+	.eh_frame : { *(.eh_frame*) }
+
+	. = ALIGN(4096);
+
+	.ctors : 
+	{ 
+		PROVIDE(ctorstart = .);
+		*(.ctors*) 
+		PROVIDE(ctorend = . );
+	}
+
+	. = ALIGN(4);
+
+	.dtors : 
+	{ 
+		PROVIDE( dtorstart = .);
+		*(.dtors*) 
+		PROVIDE( dtorend = . );
+	}
+
+	. = ALIGN(4096);
+
+	.data : 
+	{ 
+/*
+		LONG(ctorstart); 
+		LONG(ctorend); 
+		LONG(dtorstart);
+		LONG(dtorend);
+*/
+		*(.data*) 
+	}
+
+	. = ALIGN(4);
+
+	.bss : { *(.bss*) }
+
+}
+

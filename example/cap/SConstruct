@@ -1,0 +1,14 @@
+Import("*")
+obj = env.KengeProgram("cap_example", LIBS=["iguana", "c", "gcc", "l4", "naming", "l4e", "mutex", "ll"])
+
+env["EXPECT_TEST_DATA"] = [("String before: Hello World!", None),
+                           ("String upper : HELLO WORLD!", None),
+                           ("String lower : hello world!", None),
+                           ("String before: Goodbye cruel world", None),
+                           ("String upper : GOODBYE CRUEL WORLD", None),
+                           ("String lower : goodbye cruel world", None),
+                           ("Now we go into a loop creating and deleting sessions. This ", None),
+                           ("should go on indefinately", None),
+                           ("Done: 1000", None)]
+
+Return("obj")

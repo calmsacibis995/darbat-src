@@ -1,0 +1,19 @@
+\chapter{Introduction}
+
+\section{Overview}
+Magpie is an interface compiler. Given an interface specification, it provides code that allows software modules to communicate via that interface. Magpie currently generates interfaces to support software running on the L4 microkernel.
+
+This document explains why you might want to use an interface compiler in your project, describes how to create interfaces and run the compiler, and then discusses ways Magpie might be modified to support different sorts of interfaces.
+
+Magpie is currently used to generate interfaces for DiSy's Iguana project.
+
+\section{Purpose}
+The L4 API offers message passing as its inter-thread communication mechanism. Each thread may send up to 64 words of data to another thread via {\it message registers}. This low-level mechanism is used throughout L4, from page-fault handing up.
+
+Although this bare interface is acceptable for simple communication tasks, it can become confusing when communication requirements get more complex, particularly when one server thread can perform different functions depending on parameters passed to it. Client code which uses the server is obliged to manually place the function ID and parameters into message registers. This makes for a large amount of almost-duplicated client code, which is both confusing and a source of bugs.
+
+The solution is to provide a higher-level wrapper around L4's native calls. Magpie does this by reading {\it interface definitions} and translating them into appropriate functions: on the client side, to store data into the message registers and call the appropriate L4 functions, and, on the service side, to read data from the message registers and return a result.
+
+\section{Alternatives to Magpie}
+Many interface compilers exist, several of which support L4. The ``canonical'' implementation for L4, IDL4\footnote{\url{http://l4ka.org/projects/idl4/}}, deserves special mention here it is the compiler on which Magpie is based.
+

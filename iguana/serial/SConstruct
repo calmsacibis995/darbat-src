@@ -1,0 +1,7 @@
+Import("*")
+obj = env.MyProgram("ig_serial", 
+                    EXTRA_CPPDEFINES=[("SERIAL_DRIVER", args["driver"])],
+                    LIBS=["c", "driver", args["driver"]]
+                    )
+#                    ["c", "driver", args["driver"], "range_fl", "circular_buffer", "iguana"]
+Return("obj")

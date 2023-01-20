@@ -1,0 +1,3 @@
+Import("*")
+lib = (["#libs/queue/include/"], None, None, [], [])
+Return("lib")

@@ -1,0 +1,3 @@
+Import("env")
+lib = env.MyLibrary("range_fl", LIBS=["c", "ll"])
+Return("lib")

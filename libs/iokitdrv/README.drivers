@@ -1,0 +1,11 @@
+All of these drivers, I took the version out of their directories.
+
+They correspond to the ones from 10.4.2.
+
+Except for:
+
+IOATABlockStorage (10.3, nowhere to be found for 10.4)
+IOSCSI.* blah balh (10.3, 404 for 10.4)
+IOUSBFamily (snagged these from 10.4.4)
+IOUSBFamily: removed pragma pack from there.  Instead, used alignment=1
+

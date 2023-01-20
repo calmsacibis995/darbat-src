@@ -1,0 +1,20 @@
+README libgcc
+
+This project is NOT meant to be explicitly exported.  None of these
+functions are meant to be explicitly used.  These are the functions
+that are included with libgcc, but cannot use the original version
+due to static/dynamic library incompatibility.
+
+You are required to include this library in your list of libraries to link,
+however, if gcc implicitly emits code that makes use of these functions.
+
+These functions originate from the NetBSD operating system, in 
+sys/libkern, and are thus under the BSD license, not the GNU 
+General Public License as would usually be the case for someone who
+uses the libgcc bundled with gcc.
+
+This package is, of course, not complete in any way.  Things are 
+added "on demand", i.e., when they are required.  The best place to 
+pull them in would be from the NetBSD operating system.
+
+

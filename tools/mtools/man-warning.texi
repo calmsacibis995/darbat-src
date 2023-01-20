@@ -1,0 +1,7 @@
+@c for man page version only
+@unnumbered Note of warning
+This manpage has been automatically generated from mtools's texinfo
+documentation, and may not be entirely accurate or complete.  See the
+end of this man page for details.
+
+@c skipskipskip

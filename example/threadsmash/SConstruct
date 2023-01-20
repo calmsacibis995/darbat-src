@@ -1,0 +1,9 @@
+Import("*")
+obj = env.KengeProgram("threadsmash_example", LIBS=["iguana", "c", "gcc", "iguana", "l4", "gcc", "ll", "naming", "l4e", "mutex"])
+
+env["EXPECT_TEST_DATA"] = [("THREAD TESTING", None),
+			   ("SIMPLE TEST COMPLETE", None),
+			   ("COMPLEX TEST COMPLETE", None)]
+
+
+Return("obj")

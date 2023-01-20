@@ -1,0 +1,8 @@
+Import("*")
+libs = ["lua", "c", "naming", "gcc", "l4", "ll", "iguana", "mutex", "l4e"]
+
+if "drv_ln2410sbc_lcd" in env.machine.drivers:
+    libs += ["drv_ln2410sbc_lcd", "freetype", "evas"]
+
+obj = env.MyProgram("iguana_shell", LIBS=libs)
+Return("obj")

@@ -1,0 +1,79 @@
+* finding or making disy@cse.unsw.edu.au--private/darbat-demo--l4darwin--0.1--patch-3
+* build reference tree for disy@cse.unsw.edu.au--private/darbat-demo--l4darwin--0.1--patch-3
+* finding or making disy@cse.unsw.edu.au--private/darbat-demo--l4darwin--0.1--patch-4
+* build reference tree for disy@cse.unsw.edu.au--private/darbat-demo--l4darwin--0.1--patch-4
+* computing changeset
+A  darbat/igcompat/src/iokit/.arch-ids/disk.c.id
+A  darbat/igcompat/src/iokit/.arch-ids/diskdev.c.id
+A  darbat/igcompat/src/iokit/disk.c
+A  darbat/igcompat/src/iokit/diskdev.c
+A  {arch}/darbat-demo/darbat-demo--l4darwin/darbat-demo--l4darwin--0.1/disy@cse.unsw.edu.au--private/patch-log/patch-4
+M  darbat/bsd/dev/memdev.c
+M  darbat/bsd/kern/kern_exec.c
+M  darbat/bsd/vfs/vfs_bio.c
+M  darbat/igcompat/machvm/vm_map.c
+M  darbat/igcompat/machvm/pmap.c
+M  darbat/user_app/main.c
+M  darbat/igcompat/src/pe_stubs.c
+M  darbat/igcompat/src/iokit.c
+M  darbat/igcompat/src/sysloop.c
+M  darbat/igcompat/syscallnums.h
+M  darbat/user_app/Makefile
+M  darbat/user_app/libsystem.c
+M  darbat/user_app/libsystem.h
+M  darbat/user_app/hacklibc.c
+M  darbat/user_app/hacklibc.h
+M  darbat/igcompat/machvm/vm_object.c
+M  iguana/iokit/src/iokit.c
+M  libs/libkern/c++/OSRuntime.cpp
+* changeset report
+* modified files
+
+--- orig/iguana/iokit/src/iokit.c
++++ mod/iguana/iokit/src/iokit.c
+@@ -239,7 +239,7 @@
+ 	char *sav;
+ 	unsigned long *crap;
+ 	uintptr_t	sharedbase;
+-	L4_Word_t	mr[3];
++	L4_Word_t	mr[4];
+ 	pd_ref_t newpd;
+ 	int rc;
+ 	int i;
+@@ -554,18 +554,19 @@
+ 	 	 * Protocol:
+ 		 *
+ 		 * mr[0] = request
+-		 * mr[1] = offset
++		 * mr[1] = offset (low 32 bits)
+ 		 * mr[2] = size
++		 * mr[3] = offset (high 32 bits)
+ 		 *
+ 		 */
+-		for (i = 0; i < 3; i++)
++		for (i = 0; i < 4; i++)
+ 			mr[i] = L4_MsgWord(&msg, i);
+ 
+ 		switch (mr[0]/*req*/) {
+ 
+ 			case DISKREAD:
+ 				uio->uio_rw = UIO_READ;
+-				uio->uio_offset = mr[1];
++				uio->uio_offset = mr[1] | (((unsigned long long) mr[3]) << 32ULL);
+ 				/*
+ 			 	 * these two are fine, they will be patched
+ 				 * back up to the default when we loop around
+
+
+--- orig/libs/libkern/c++/OSRuntime.cpp
++++ mod/libs/libkern/c++/OSRuntime.cpp
+@@ -183,8 +183,8 @@
+ // Doesn't work.  Sigh.  What's the deal with ld and gcc magic??
+ // extern void *__ctor __attribute__ ((weak, alias(".ctors")));
+ 
+-void *__ctorloc = 0x316af0;	// YUCK.  Gotten from grey knowledge in objdump
+-int ctorssiz = 0x258;		// YUCK 
++void *__ctorloc = 0x316b10;	// YUCK.  Gotten from grey knowledge in objdump
++int ctorssiz = 0x260;		// YUCK 
+ 
+ #endif

@@ -1,0 +1,44 @@
+UTCR0 32 @ 0x0:
+ pe <0>     # Parity Enable
+ oes <1>    # Odd/even parity select
+ sbs <2>    # Stop bit select
+ dss <3>    # data size select
+ sce <4>    # Sample clock enable
+ rce <5>    # Receive clock edge select
+ tce <6>    # Tranmist clock edge select
+ 
+UTCR1 32 @ 0x4:
+ brd_hi <0:3>  # Baud rate divisor (hi bits)
+
+UTCR2 32 @ 0x8:
+ brd_lo <0:7>  # Baud rate divisor (lo bits)
+
+UTCR3 32 @ 0xc:
+ rxe <0>       # Receive enable
+ txe <1>       # Transmitter enable
+ brk <2>       # Break
+ rie <3>       # Recevie FIFO interrupt enable
+ tie <4>       # Transmit FIFO interrupt enable
+ lbm <5>       # Loopback mode
+
+UTDR 32 @ 0x13:
+ data <0:7>
+ pre <8>      # Parity error
+ fre <9>      # Framing error
+ ror <10>     # Receive overrun
+
+UTSR0 32 @ 0x1c:
+ tfs <0>   # Transmit FIFO request
+ rfs <1>   # Receive FIFO request
+ rid <2>   # Receive idle
+ rbb <3>   # Receiver begin of break
+ reb <4>   # Receive end of break
+ eif <5>   # Error in FIFO 
+
+UTSR1 32 @ 0x20:
+ tby <0>    # Transmitter busy
+ rne <1>    # Refeive FIFO not empty
+ tnf <2>    # Transmitter not full
+ pre <3>    # Parity error
+ fre <4>    # Framing error
+ ror <5>    # Receive FIFO overrun

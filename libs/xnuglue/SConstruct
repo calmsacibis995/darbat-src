@@ -1,0 +1,78 @@
+Import("*")
+
+srcList=[]
+
+srcList += src_glob("src/cctools/ld/*.c")
+srcList += src_glob("src/osfmk/mach-o/*.c")
+srcList += src_glob("src/osfmk/vm/*.c")
+srcList += src_glob("src/bsd/dev/i386/*.c")
+srcList += src_glob("src/bsd/dev/l4/*.c")
+srcList += src_glob("src/arch-ia32/*.S")
+srcList += src_glob("src/osfmk/kern/*.c")
+srcList += src_glob("src/osfmk/mach/*.c")
+srcList += src_glob("src/osfmk/device/*.c")
+srcList += src_glob("src/osfmk/i386/*.c")
+srcList += src_glob("src/osfmk/l4/*.c")
+srcList += src_glob("src/osfmk/console/*.c")
+srcList += src_glob("src/osfmk/console/panic_ui/genimage.c")
+srcList += src_glob("src/pexpert/l4/*.c")
+srcList += src_glob("src/pexpert/gen/*.c")
+srcList += src_glob("src/l4compat/*.c")
+srcList += src_glob("src/libkern/uuid/*.c")
+srcList += src_glob("src/libkern/stdio/*.c")
+srcList += src_glob("src/bsd/kern/*.c")
+srcList += src_glob("src/bsd/vfs/*.c")
+srcList += src_glob("src/bsd/libkern/*.c")
+
+# added by CEG
+# see iokitcli library...
+#srcList += src_glob("src/shared/*.c")
+
+ccflags=["-DNOTFB31=0", 
+	"-D__pic__",
+	"-DDEBUG=0",
+	"-static",
+	"-DLP64_DEBUG=0",
+	"-DDIAGNOSTIC=1",
+	"-DIOASSERT=0",
+	"-DTASK_SWAPPER=0",
+	"-DBLUE_DEBUG=0",
+	"-DTYPE_BOOL=0",
+	"-DSENDFILE=0", 
+	"-DCOMPAT_43_TTY=0",
+	"-DMACH_KERNEL_PRIVATE", 
+	"-DMACH_ASSERT", 
+	"-DKERNEL", 
+	"-D__APPLE_API_UNSTABLE", 
+	"-DPRIVATE=1", 
+	"-DMACH_DEBUG=0", 
+	"-DMACH_LDEBUG=0", 
+	"-DXNU_KERNEL_PRIVATE=1", 
+	"-DKERNEL_PRIVATE", 
+	"-D__BIG_ENDIAN__=0", 
+	"-D__LITTLE_ENDIAN__=1", 
+	"-DL4IOKIT", 
+	"-D__APPLE__=1", 
+	"-DBSD_KERNEL_PRIVATE=1", 
+	"-DBSD_BUILD=1",
+	"-fno-strict-aliasing"]
+
+lib = env.MyLibrary("xnuglue", CCFLAGS=ccflags,
+	CXXFLAGS=["-DPRIVATE=1", 
+	"-DXNU_KERNEL_PRIVATE=1", 
+	"-DKERNEL_PRIVATE",  
+	"-D__LITTLE_ENDIAN__=1", 
+	"-DL4IOKIT",
+	"-fno-strict-aliasing"],
+	CPPPATH=["#libs/xnuglue/xnu_include/include", 
+	"#libs/xnuglue/xnu_iclude/include/bsd", 
+	"#libs/xnuglue/xnu_include/include/EXTERNAL_HEADERS", 
+	"#libs/xnuglue/xnu_include/include/osfmk", 
+	"#libs/xnuglue/xnu_include/include/pexpert", 
+	"#libs/xnuglue/xnu_include/include/bsd", 
+	"#libs/libkern",  
+	"#libs/iokit", 
+	"#libs/xnuglue/xnu_include"], 
+	source=srcList,
+	LIBS=["c", "iguana", "lkm", "mach-o", "gcc", "timer", "iokitcli" ])
+Return("lib")

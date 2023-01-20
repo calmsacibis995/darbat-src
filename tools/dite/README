@@ -1,0 +1,6 @@
+Dite is a tool used to merge multiple ELF files
+into a bootable image. This is primarily used for
+booting the L4 microkernel.
+
+To build this software you need the "Scons" build
+tool available from http://www.scons.org

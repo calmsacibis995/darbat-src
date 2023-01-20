@@ -1,0 +1,32 @@
+        This is at least a partial credits-file of people that have
+	contributed to the DITE project.  It is sorted by name and
+	formatted to allow easy grepping and beautification by
+	scripts.  The fields are: name (N), email (E), web-address
+	(W), PGP key ID and fingerprint (P), description (D), and
+	snail-mail address (S). (from linux)
+-----------------------------------------------------
+
+N: Simon Winwood
+E: sjw@cse.unsw.edu.au
+W: http://www.cse.unsw.edu.au/~sjw/
+D: All of the functionality except for getopt* and unix*
+
+N: Patrykz Zadernovski
+E: patrykz@cse.unsw.edu.au
+W: http://www.cse.unsw.edu.au/~patrykz/
+D: unix.[ch] --- portable unix file tools.
+
+N: Daniel Potts
+E: danielp@cse.unsw.edu.au
+W: http://www.cse.unsw.edu.au/~danielp
+D: Various fixes
+
+N: Ben Leslie
+E: benjl@cse.unsw.edu.au
+W: http://www.benno.id.au
+D: Pistachio support
+
+N: Nicholas FitzRoy-Dale
+E: nfd@cse.unsw.edu.au
+W: http://www.cse.unsw.edu.au/~nfd
+D: Generation of Pistachio kcp and bootinfo structure

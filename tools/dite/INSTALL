@@ -1,0 +1,5 @@
+Installation:
+
+% scons install prefix=/path/to/install
+
+The prefix will default to /usr/local

@@ -1,0 +1,8 @@
+Import("*")
+platform = getattr(env.machine, "platform", None)
+cppdefines = []
+if platform == "efi":
+     cppdefines += ["__EFI__"]
+lib = env.MyLibrary("drv_8254_timer", 
+	CPPDEFINES=env["CPPDEFINES"] + cppdefines, LIBS=["c", "driver"])
+Return("lib")

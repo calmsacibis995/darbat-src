@@ -1,0 +1,9 @@
+ The todo list is now.
+   - better man pages for the COUNTRY stuff
+   - test writing with xdf disks
+   - man pages for xdf stuff (shouldn't be too tough)
+   - various transfer size optimisation (right now, most read/write routines
+   use the minimal possible transfer size :-( )
+   - code to enable suns to access xdf and 2m disks :-)
+
+ Volunteers appreciated, especially for the first 3 items.

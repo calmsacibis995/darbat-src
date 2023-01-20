@@ -1,0 +1,4 @@
+Import("*")
+obj = env.MyProgram("ig_naming", 
+                    LIBS=["mutex", "c", "circular_buffer", "binary_tree", "iguana", "circular_buffer", "iguana", "l4", "gcc", "ll", "naming", "l4e"])
+Return("obj")

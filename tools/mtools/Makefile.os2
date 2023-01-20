@@ -1,0 +1,36 @@
+#
+# makefile for building mtools on the OS/2
+#
+
+LDFLAGS=-Zexe -Zcrtdll -Zbin-files -s
+DEFINES=-DSYSCONFDIR=\"/usr/etc\"
+CC=gcc -O2 -pipe $(DEFINES)
+RM=rm -f
+
+OBJS = buffer.o codepage.o codepages.o config.o copyfile.o devices.o \
+dirCache.o directory.o direntry.o expand.o fat.o fat_free.o file.o file_name.o \
+file_read.o filter.o force_io.o hash.o init.o match.o mainloop.o \
+mattrib.o mbadblocks.o mcd.o mcopy.o mdel.o mdir.o mdu.o mformat.o \
+minfo.o misc.o missFuncs.o mk_direntry.o mlabel.o mmd.o mmount.o \
+mmove.o mpartition.o mshowfat.o mzip.o mtools.o plain_io.o \
+precmd.o privileges.o scsi.o signal.o stream.o streamcache.o subdir.o \
+unixdir.o toupper.o tty.o vfat.o xdf_io.o
+
+all: mtools
+
+${OBJS}: config.h
+
+mtools:	${OBJS}
+	${CC} -o mtools ${LDFLAGS} ${OBJS} -lbsd
+
+mkmanifest: mkmanifest.c
+	${CC} -Dstrcasecmp=stricmp ${LDFLAGS} -o mkmanifest mkmanifest.c
+
+mostlyclean:
+	${RM} *# *.rej *~ *.orig *.o a.out core
+
+clean:	mostlyclean
+	${RM} mtools mtools.exe mkmanifest mkmanifest.exe *.info*
+
+distclean: clean
+	${RM} config.cache config.h config.status config.log Makefile

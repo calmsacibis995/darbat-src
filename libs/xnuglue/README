@@ -1,0 +1,20 @@
+/*
+ * README
+ *
+ * Geoffrey Lee < glee at cse.unsw.edu.au >
+ */
+
+
+Thie library implements the required xnu emulation.  This is required
+because we do not want to change the I/O Kit's Mach dependencies, yet
+we do not wish to make use of Mach.  (The I/O Kit now lives in a separate
+protection domain to Mach/BSD in L4IOKit).
+
+In xnu, the different components are compiled separately with separate
+defines.  In xnu_glue, we do not do this.  This is obviously a little
+broken, and we should, since the defines hide certain things and 
+define others differently.  This may or may not be revisited in the future.
+
+
+	-- geoff.
+

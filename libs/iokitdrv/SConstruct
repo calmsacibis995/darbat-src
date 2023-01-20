@@ -1,0 +1,296 @@
+Import("*")
+import os
+srcList = src_glob("AppleI386GenericPlatform/*.cpp") + \
+	src_glob("AppleI386PCI/*.cpp") + \
+	src_glob("IOPCIFamily/*.cpp") + \
+	src_glob("drvAppleIntelClock/*.cpp") + \
+	src_glob("IOStorageFamily/*.cpp") + \
+	src_glob("AppleAPIC/*.cpp")
+
+srcListDrv = \
+	src_glob("yukonosx/*.cpp") + \
+	src_glob("IOGraphics/*.cpp") + \
+	src_glob("AppleIntelPIIXATA/*.cpp") + \
+	src_glob("ApplePS2Controller/*.cpp") + \
+	src_glob("AppleSMBIOS/*.cpp") + \
+	src_glob("IOHIDFamily/IOHIDFamily/*.c") + \
+	src_glob("IOHIDFamily/IOHIDFamily/*.cpp") + \
+	src_glob("IOHIDFamily/IOHIDSystem/IOHIDDescriptorParser/*.cpp") + \
+	src_glob("IOHIDFamily/IOHIDSystem/*.cpp") + \
+	src_glob("IOATAFamily/*.cpp")  + \
+	src_glob("IOATABlockStorage/*.cpp")  + \
+	src_glob("Apple16X50Serial/*.cpp")  + \
+	src_glob("IOSerialFamily/IOSerialFamily.kmodproj/*.cpp") + \
+        src_glob("IOUSBFamily/AppleUSBUHCI/Classes/*.cpp") + \
+	src_glob("IOUSBFamily/AppleUSBOpticalMouse/*.cpp") + \
+        src_glob("IOUSBFamily/AppleUSBHub/Classes/*.cpp") + \
+        src_glob("IOUSBFamily/IOUSBFamily/Classes/*.cpp") + \
+        src_glob("IOUSBFamily/IOUSBUserClient/Classes/*.cpp") + \
+        src_glob("IOUSBFamily/AppleUSBMergeNub/Classes/*.cpp") + \
+	src_glob("IOUSBFamily/IOUSBCompositeDriver/Classes/*.cpp") + \
+	src_glob("IOUSBFamily/IOUSBHIDDriver/Classes/*.cpp") + \
+	src_glob("IOUSBFamily/AppleUSBEHCI/Classes/*.cpp") + \
+	src_glob("IOUSBMassStorageClass/*.cpp")  + \
+	src_glob("IOSCSIArchitectureModelFamily/IOSCSIArchitectureModel/*.cpp") + \
+	src_glob("IOSCSIArchitectureModelFamily/IOSCSIBlockCommands/*.cpp") + \
+	src_glob("IOSCSIArchitectureModelFamily/UserClient/*.cpp")  
+	#src_glob("bin/AppleYukon")
+# enablethe above line if you are running on a Mach-O toolchain with 
+# the yukon driver.  There should be some way for us to find out at
+# compile time whether we are running with the appropriate toolchain or not
+# but alas, -ENOTYET..
+
+# nope.
+	# no virt to phys for now
+	# this is the pio version.  doesn't work with sata, and it hasn't
+	# been adapted for our l4iokit intr latency hack.
+	#src_glob("AppleIntel8255x/*.cpp") + \
+	#src_glob("AppleGenericPCATA/*.cpp")  + \
+	# ehternet controller uses intr 9, same as ehci
+	#src_glob("AppleAC97Audio/IOAC97Family/*.cpp") + \
+	#src_glob("AppleAC97Audio/AppleAC97CodecAD198x/*.cpp") + \
+	#src_glob("AppleAC97Audio/AppleAC97AudioDriver/*.cpp") + \
+	#src_glob("AppleAC97Audio/AppleAC97AudioIntelICH/*.cpp") + \
+	#src_glob("IOAudioFamily/*.cpp") + \
+	#src_glob("ApplePS2Mouse/*.cpp") + \
+	#src_glob("ApplePS2Keyboard/*.cpp") + \
+
+# caveats: IOATABlockStorage seems to be an old version.
+
+# Do it like this for easy commenting out
+if env.toolchain == "gnuelf":
+    srcList += srcListDrv
+
+# we are not buliding iograhics for now we just need its header file
+cxxflags=["-D__MBUF_PROTO=mbuf_t",
+	"-fno-strict-aliasing",
+	"-Wno-multichar",
+	"-DPRIVATE=1",
+	"-Wno-undef",
+	"-DBSD_BUILD=1",
+	"-DXNU_KERNEL_PRIVATE=1",
+	"-D__LITTLE_ENDIAN__=1",
+	"-fno-rtti",
+	"-fno-exceptions",
+	"-fcheck-new",
+	"-fpermissive",
+	"-static",
+	"-g",
+	"-nostdinc",
+	"-nostdlib",
+	"-fno-builtin",
+	"-finline",
+	"-fno-keep-inline-functions",
+	"-fsigned-bitfields",
+	"-Wpointer-arith",
+	"-D__i386__",
+	"-DPAGE_SIZE_FIXED",
+	"-DIOASSERT=0",
+	"-O2",
+	"-fschedule-insns",
+	"-DAPPLE",
+	"-D__APPLE__=1",
+	"-DNeXT",
+	"-DKERNEL_PRIVATE",
+	"-D__MACHO__=0",
+	"-Dvolatile=__volatile",
+	"-DL4IOKIT",
+	"-DKERNEL",
+	"-DDRIVER_PRIVATE",
+	"-Wall",
+	"-fno-common",
+	"-DIOMATCHDEBUG=1",
+	"-DIOALLOCDEBUG=1 -w"]
+if env.toolchain_name == "apple":
+	cxxflags += ["-fapple-kext"]
+platform = getattr(env.machine, "platform", None)
+if platform == "efi":
+	cxxflags += ["-D__EFI__"]
+
+#this whole list of cflags is a hack.
+lib = env.MyLibrary("iokitdrv", 
+	LIBS=["naming", "l4", "c"], 
+	CPPPATH=["#libs/iokitdrv/IOUSBFamily/AppleUSBHub/Headers", 
+	"#libs/iokitdrv/IOSCSIArchitectureModelFamily/IOSCSIArchitectureModel",
+	"#libs/iokitdrv/IOSCSIArchitectureModelFamily/UserClientLib", 
+	"#libs/iokitdrv/IOSCSIArchitectureModelFamily",
+	"#libs/iokitdrv/IOUSBFamily/AppleUSBMergeNub/Headers", 
+	"#libs/iokitdrv/IOUSBCompositeDriver/Headers", 
+	"#libs/iokitdrv/IOUSBFamily/IOUSBFamily/Headers", 
+	"#libs/iokitdrv/IOUSBFamily/AppleUSBUHCI/Headers", 
+	"#libs/iokitdrv/IOUSBFamily/AppleUSBEHCI/Headers", 
+	"#libs/iokitdrv/IOUSBFamily/IOUSBUserClient/Headers", 
+	"#libs/iokitdrv/IOUSBFamily",
+	"#libs/iokitdrv/IONetworkingFamily", 
+	"#libs/iokitdrv/AppleIntel8255x", 
+	"#libs/iokitdrv/IOACPIFamily", 
+	"#libs/iokitdrv/IOATABlockStorage/UserClient", 
+	"#libs/iokitdrv/IOATABlockStorage/UserClientLib", 
+	"#libs/iokitdrv/IOATABlockStorage", 
+	"#libs/iokitdrv/AppleAC97Audio/AppleAC97AudioDriver", 
+	"#libs/iokitdrv/AppleAC97Audio/IOAC97Family", 
+	"#libs/iokitdrv/IOStorageFamily", 
+	"#libs/iokitdrv/IOATAFamily", 
+	"#libs/iokitdrv/AppleIntelPIIXATA", 
+	"#libs/iokitdrv/AppleAPIC", 
+	"#libs/iokitdrv/AppleSMBIOS", 
+	"#libs/iokitdrv/IOAudioFamily", 
+	"#libs/iokitdrv/Apple16X50Serial", 
+	"#libs/iokitdrv/IOSerialFamily", 
+	"#libs/iokitdrv/AppleI386GenericPlatform", 
+	"#libs/iokitdrv/hacks/include", 
+	"#libs/iokitdrv/IOHIDFamily/IOHIDSystem", 
+	"#libs/iokitdrv/IOHIDFamily/IOHIDFamily", 
+	"#libs/iokitdrv/AppleI386PCI", 
+	"#libs/iokitdrv/IOPCIFamily", 
+	"#libs/iokitdrv/ApplePS2Controller", 
+	"#libs/xnuglue/xnu_include/include", 
+	"#libs/xnuglue/xnu_include/include/osfmk" ,
+	"#libs/xnuglue/xnu_include/include/EXTERNAL_HEADERS", 
+	"#libs/xnuglue/xnu_include/include/pexpert", 
+	"#libs/xnuglue/xnu_include/include/bsd" ,
+	"#libs/iokit", 
+	"#libs/libkern"], 
+	SRCDIR="Kernel", 
+	CCFLAGS=["-Wno-multichar",
+	"-fno-strict-aliasing",
+	"-w",
+	"-DIOASSERT=0",
+	"-D__LITTLE_ENDIAN__=1",
+	"-static",
+	"-g",
+	"-nostdinc",
+	"-nostdlib",
+	"-fno-builtin",
+	"-finline",
+	"-fno-keep-inline-functions",
+	"-fsigned-bitfields",
+	"-Wno-undef",
+	"-Wpointer-arith",
+	"-D__i386__",
+	"-DPAGE_SIZE_FIXED",
+	"-O2",
+	"-fschedule-insns",
+	"-DXNU_KERNEL_PRIVATE=1",
+	"-DAPPLE",
+	"-DNeXT",
+	"-DKERNEL_PRIVATE",
+	"-D__MACHO__=0",
+	"-Dvolatile=__volatile",
+	"-DLIBKERN",
+	"-DKERNEL",
+	"-DLIBKERN_KERNEL_PRIVATE",
+	"-DOSALLOCDEBUG=0",
+	"-Wall",
+	"-fno-common",
+	"-Ilibkern",
+	"-DKERNEL_PRIVATE",
+	"-DL4IOKIT",
+	"-w"], 
+	CXXFLAGS=cxxflags,
+	source=srcList)
+# It is too difficult to hook into xcodebuild here.  So we just add
+# the precompiled binary.
+if env.toolchain_name == "apple":
+    driverObj = env.Command(["DarwinDriverIOKitNull"], ["IOKitNull"], 
+	"cp $SOURCE $TARGET")
+# normally called Info.plist in the kext.
+# The ordering is significant.  It is laid out in the order
+# [plist0, driver0], [plist1, driver1] ... [plistn, drivern]
+# This is the way the code expects it to be.  
+# XXX: if we do this then we get aligned for the plist and driver to page
+# boundary.  Work out if this is ok or not. -gl
+    driverPlist = env.Command(["DarwinDriverIOKitNull.plist"], ["IOKitNull.plist"],
+	"cp $SOURCE $TARGET")
+# XXX: temporary
+    pciPlist = env.Command(["DarwinDriverIOPCIFamily.plist"], ["IOPCIFamily.plist"],
+        "cp $SOURCE $TARGET")
+# XXX: temporary
+    storagePlist = env.Command(["DarwinDriverIOStorageFamily.plist"], ["IOStorageFamily.plist"],
+        "cp $SOURCE $TARGET")
+# XXX: temporary
+    #networkingPlist = env.Command(["DarwinDriverIONetworkingFamily.plist"], ["IONetworkingFamily.plist"],
+    #   "cp $SOURCE $TARGET")
+    #env.add_files(networkingPlist)
+    env.add_files(storagePlist)
+    env.add_files(pciPlist)
+    env.add_files(driverPlist)
+    env.add_files(driverObj)
+# we would like to add the kext automatically.  But we rely on a particular
+# boot image layout.  The code to do that may be a bit complex.  In particular,
+# the plist must go first, followed by the kext itself.
+# alternatively, a list of plist (or maybe only one) can be specified if there
+# is no code.
+    import os
+    kextlist = ["System", "IOAHCIFamily", "IOHIDFamily", "IOUSBFamily", "AppleAHCIPort"]
+    src_path = Dir('.').srcnode().abspath + "/bin/"
+
+    for root in kextlist:
+        plist = os.popen("find " + src_path + root + ".kext -type f -name 'Info.plist' -print").read()
+        kext = plist = plist.split('\n')
+        plist.remove('')
+        for p in plist:
+            x = p.split(os.sep)
+            # drivers have names kextname.kext/Contents/Info.plist for plist
+            # and the code has kextname.kext/Contents/MacOS/SomeDriver
+            # We want to differentiate by the name of the driver, since
+            # everything is called Info.plist,  and we only have a flat namespace
+            # in the boot image, the name is useless to us.  This is sometimes
+            # not the case, so we search for a .kext suffix to get the name.  We
+            # always search backwards so we pick up the innermost driver.
+            #
+            # Since each kext must come with an Info.plist, we abuse this
+            # fact and copy the code here too.
+            c = len(x) - 1
+            name = None
+            plugin = 0
+            while c >= 0:
+                tmp = x[c].split('.')
+                if len(tmp) >= 2 and tmp[-1] == "kext":
+                    name = x[c].split('.')[0]	
+                    break
+                if len(tmp) >=2 and (tmp[-1] == "plugin" or \
+                    tmp[-1] == "bundle"):
+                    plugin = 1
+                    break
+                c = c - 1
+            if plugin == 1:
+                continue	# Ignore plugins
+            myplist = env.Command(["DarwinDriver" + name + ".plist"], [p], 
+                "cp $SOURCE $TARGET")
+            # the kext is the base path of the kext, minus the Info.plist +
+            # MacOS and kext name.
+            kext = x
+            kext.remove(x[-1])
+            kpath = "".join(["%s/" % y for y in kext]) + "MacOS/" + name
+            # get the path for the existing binary on this system
+            realpath = "/System/Library/Extensions/" + kpath.replace(src_path,"")
+            if os.path.exists(realpath):
+                #os.system("rm "+kpath)
+                os.system("cp "+realpath+" "+kpath)
+            # try alternative path
+            else:
+                kpath = "".join(["%s/" % y for y in kext]) + name
+                # get the path for the existing binary on this system
+                realpath = "/System/Library/Extensions/" + kpath.replace(src_path,"")
+                if os.path.exists(realpath):
+                    #os.system("rm "+kpath)
+                    os.system("cp "+realpath+" "+kpath)
+
+            # We can just copy the binary over since we can now
+            # load universal binaries. -gl
+            mycode = env.Command(["DarwinDriver" + name], [kpath], 
+                "cp $SOURCE $TARGET")
+            env.add_files(myplist)
+            # sucks since we have to test for existence here..
+            #print kpath
+            realpath = "/System/Library/Extensions/" + kpath.replace(src_path,"")
+            #print realpath
+            if not os.path.exists(kpath):
+                print "not exist %s" % mycode
+            else:
+                env.add_files(mycode)
+
+    # end of big if block of apple toolchain
+
+Return("lib")

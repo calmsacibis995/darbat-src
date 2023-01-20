@@ -1,0 +1,28 @@
+This is Magpie, an idl clag generator.
+
+magpidl4.py contains a parser to invoke Magpie as if it were idl4.
+
+magpie.py is the native interface.
+
+Before running this code, you must download and install the Dparser Python extension:
+http://staff.washington.edu/sabbey/py_dparser/
+
+
+What are all these files and directories for?
+
+cparser/ and idlparsers/
+	Grammars for C/C++ and CORBA IDL, respectively. Or, at least, enough of these grammars to be able to parse type declarations and IDL4 interface declarations. Each directory contains a scanner, named lexer.py, and a parser, named parser.py, which make use of the Python dparser extension. The grammars were based on grammars in IDL4 and MCS.
+
+output/
+	Contains code to produce C interface stubs using a templating language. This directory is quite low-level, and contains functions to produce specific parts of specific types of files (such as a V4-format generic client-side function call).
+	
+generator/
+	Contains code to produce various types of output. Makes use of the output/ directory to do the "dirty work" of producing C code, so the functions here are quite high-level.
+
+idltypes/
+	Contains the type registry, which is a list of all currently-recognised types. These types may be built-in to multi-idl, or they may be discovered on the fly through parsing C or IDL files.
+
+targets/
+	The highest level in the target -> generator -> output hierarchy, this section contains high-level "controller" code.
+
+

@@ -1,0 +1,92 @@
+# Darbat and L4
+darbat 		ertos@nicta.com.au--private/xnu--devel--792.2.4
+pistachio	ertos@nicta.com.au--private/pistachio--darbat-efi
+tools		ertos@nicta.com.au--private/build-tools--darbat-efi
+
+# darbat branches
+iguana/init 	ertos@nicta.com.au--private/iguana-init--darbat
+libs/mutex	ertos@nicta.com.au--private/libmutex--darbat--1.0
+libs/c		ertos@nicta.com.au--private/libc--darbat
+tools/dite	ertos@nicta.com.au--private/dite--devel-x86
+libs/drv_8254_timer	ertos@nicta.com.au--private/driver-8254-timer-efi--devel
+
+# L4IOKit
+iguana/iokit	ertos@nicta.com.au--private/iguana-iokit--darbat
+libs/iokittest	ertos@nicta.com.au--private/iguana-iokittest--darbat
+libs/dynamic	ertos@nicta.com.au--private/dynamic--darbat
+libs/iokitdrv	ertos@nicta.com.au--private/iokitdrv--darbat-efi
+libs/libkern	ertos@nicta.com.au--private/libkern--darbat
+libs/iokit	ertos@nicta.com.au--private/iokit--darbat
+libs/iokitcli	ertos@nicta.com.au--private/iokitcli-darbat--devel
+libs/xnuglue	ertos@nicta.com.au--private/xnuglue--darbat
+libs/libsa	ertos@nicta.com.au--private/libsa--darbat
+
+# Loadable kernel modules
+libs/lkm	ertos@nicta.com.au--private/lkm--darbat
+libs/mach-o	ertos@nicta.com.au--private/mach-o--darbat
+
+# Random crap
+libs/gcc		ertos@nicta.com.au--private/gcc--darbat
+
+# Core Iguana
+iguana/sigma0	ertos@nicta.com.au--public/sigma0--devel--1.1--patch-1
+iguana/server	ertos@nicta.com.au--private/iguana--darbat
+iguana/naming	ertos@nicta.com.au--public/iguana-naming--devel--1.0--version-0
+iguana/serial	ertos@nicta.com.au--public/iguana-serial--devel--1.0--version-0
+#iguana/timer	ertos@nicta.com.au--public/iguana-timer--devel--1.0--version-0
+# temporary	 -gl 
+iguana/timer	ertos@nicta.com.au--private/iguana-timer--darbat
+iguana/trace	ertos@nicta.com.au--public/iguana-trace--devel--1.0--version-0
+
+# Example applications
+example/cap		ertos@nicta.com.au--public/iguana-example-cap--devel--1.0--version-0
+example/iguana		ertos@nicta.com.au--public/iguana-example-iguana--devel--1.0--version-0
+example/memsection	ertos@nicta.com.au--public/iguana-example-memsection--devel--1.0--version-0
+example/naming		ertos@nicta.com.au--public/iguana-example-naming--devel--1.0--version-0
+example/preempt		ertos@nicta.com.au--public/iguana-example-preempt--devel--1.0--version-0
+example/semaphore	ertos@nicta.com.au--public/iguana-example-semaphore--devel--1.0--version-0
+example/threadsmash	ertos@nicta.com.au--public/iguana-example-threadsmash--devel--1.0--version-0
+example/timer		ertos@nicta.com.au--public/iguana-example-timer--devel--1.0--version-0
+
+# Apps
+apps/iguana_shell	ertos@nicta.com.au--public/iguana-shell--devel--1.0--version-0
+
+# Libraries
+libs/binary_tree	ertos@nicta.com.au--public/libbinary-tree--devel--1.0--version-0
+libs/bit_fl		ertos@nicta.com.au--public/libbit-fl--devel--1.0--version-0
+libs/b_plus_tree	ertos@nicta.com.au--private/libb-plus-tree--darbat
+libs/circular_buffer	ertos@nicta.com.au--public/libcircular-buffer--devel--1.0--version-0
+libs/cycles		ertos@nicta.com.au--public/libcycles--devel--1.0--version-0
+libs/driver		ertos@nicta.com.au--private/libdriver--darbat
+libs/drv_l4_kdb		ertos@nicta.com.au--public/driver-l4-kdb--devel--1.0--version-0
+libs/drv_pxa250_timer	ertos@nicta.com.au--public/driver-pxa250-timer--devel--1.0--version-0
+libs/drv_sa1100_timer	ertos@nicta.com.au--public/driver-sa1100-timer--devel--1.0--version-0
+libs/drv_sa1100_uart	ertos@nicta.com.au--public/driver-sa1100-uart--devel--1.0--version-0
+libs/drv_gt64xxx_timer	ertos@nicta.com.au--public/driver-gt64xxx-timer--devel--1.0--version-0
+libs/elf		ertos@nicta.com.au--public/libelf--devel--1.1--patch-2
+libs/hash		ertos@nicta.com.au--public/libhash--devel--1.0--version-0
+libs/iguana	ertos@nicta.com.au--private/libiguana--darbat
+libs/l4e	ertos@nicta.com.au--private/libl4e--darbat
+libs/l4		ertos@nicta.com.au--private/libl4--darbat
+libs/ll		ertos@nicta.com.au--public/libll--devel--1.0--version-0
+libs/lua	ertos@nicta.com.au--public/liblua--devel--5.0.2--version-0
+libs/naming	ertos@nicta.com.au--private/libnaming--darbat
+libs/obj_alloc	ertos@nicta.com.au--public/libobj-alloc--devel--1.0--version-0
+libs/queue	ertos@nicta.com.au--public/libqueue--devel--1.0--version-0
+libs/range_fl	ertos@nicta.com.au--public/librange-fl--devel--1.0--version-0
+libs/timer	ertos@nicta.com.au--private/libtimer--darbat
+libs/trace	ertos@nicta.com.au--private/libtrace--darbat
+libs/util	ertos@nicta.com.au--public/libutil--devel--1.0--version-0
+
+# Others
+loaders/elf-loader	ertos@nicta.com.au--public/elf-loader--devel--1.0--version-0
+loaders/kickstart	ertos@nicta.com.au--private/kickstart--darbat
+
+# Tools
+tools/genext2fs		ertos@nicta.com.au--public/genext2fs--devel--1.3--version-0
+tools/grub		ertos@nicta.com.au--public/grub--devel--0.97--version-0
+tools/magpie		ertos@nicta.com.au--public/magpie--devel--1.0--version-0
+tools/mtools		ertos@nicta.com.au--public/mtools--devel--3.9.9--version-0
+tools/pyelf		ertos@nicta.com.au--public/pyelf--devel--1.0--version-0
+
+

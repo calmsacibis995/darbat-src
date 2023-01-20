@@ -1,0 +1,6 @@
+Import("*")
+obj = env.KengeProgram("iguana_example", LIBS=["c", "iguana", "gcc", "range_fl", "circular_buffer", "iguana", "l4", "gcc", "ll", "naming", "l4e", "mutex"])
+
+env["EXPECT_TEST_DATA"] = [("IGUANA TEST PASSED", None)]
+
+Return("obj")

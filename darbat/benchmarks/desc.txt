@@ -1,0 +1,16 @@
+i386_full: measurments taken in single-user mode in Darwin 8.2 on the DTK
+01: initial output when we were first able to run the benchmark suite
+02: copyin/out fixed to be much faster, but there is still much room for improvement
+03: pthread thread-local-storage now uses utcb to set/get the pointer (instead of L4 IPC)
+04: with L4 fastpath enabled
+05: with serial thread disabled
+06: quickenter methods added
+07: sysenter enabled
+08: pse enabled (with sysenter)
+
+imac-reference: measurements taken in single-user mode in 10.4.6 on 1.83GHz Core Duo iMac
+imac-00: initial measurements on imac with L4SERIAL enabled (ie lots of polling)
+imac-01: L4SERIAL polling disabled, iokit disabled
+imac-02: Optimised stubs with iokit
+imac-03: Optimised stubs without iokit
+imac-04: Optimised stubs after cleanup (and fork sadness)

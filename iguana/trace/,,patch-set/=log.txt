@@ -1,0 +1,18 @@
+Revision: iguana-trace--mainline--0.2--base-0
+Archive: benjl@cse.unsw.edu.au--priv-01
+Creator: Carl van Schaik <Carl.vanSchaik@nicta.com.au>
+Date: Fri Oct 14 15:49:26 EST 2005
+Standard-date: 2005-10-14 05:49:26 GMT
+New-patches: benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.1--base-0
+    benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.1--patch-1
+    benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.1--patch-2
+    benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.1--patch-3
+    benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.1--patch-4
+    benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.1--patch-5
+    benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.1--patch-6
+    benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.1--version-0
+    benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.2--base-0
+Continuation-of: benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.1--version-0
+Summary: tag of benjl@cse.unsw.edu.au--priv-01/iguana-trace--mainline--0.1--version-0
+
+(automatically generated log message)

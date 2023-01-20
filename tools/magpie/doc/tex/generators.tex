@@ -1,0 +1,59 @@
+\chapter{Generators}
+\label{chapter:generators}
+
+If you are only making slight changes to the V4 generator, you may be able to overload the V4 Generator class, and add your own code using ``hooks'', discussed below.
+
+If you cannot overload the V4 generic class, you will need to provide a class that can generate both client and server stubs. Probably the best way to begin is to examine the V4 generator, {\tt generator/v4generator.py}. This implements a ``generator controller'' class, which creates the relevant client or service class.
+
+\section{AST Nodes}
+Each node in the ast is defined as an instance of class Node, defined in {\tt parser\_common.py}. Nodes contain three data items:
+
+\begin{description}
+\item[type]: a string containing the name of the node. This name is the corresponding left-hand-side name in the AST.
+\item[leaf]: A string, or a list, containing node-specific leaves for this node. For example, a function definition may contain the function name as a leaf of the definition node.
+\item[children]: A list of child nodes for this node.
+\end{description}
+
+Nodes also contain a number of convenience functions, outlined in figure \ref{fig:generator:node:functions}. It is worth becoming familiar with the convenience functions, as they make walking the tree much simpler.
+
+\begin{figure}
+\begin{description}
+\item[the(keylist)]: If this node contains any children mentioned in {\it keylist}, return the matching child. If more than one child matches, raise an exception. If no children match, return {\tt None}.
+\item[find\_single\_child(keylist)]: An alias for {\tt the(keylist)}.
+\item[maybe\_walk\_to(keylist)]: If the node contains a child whose {\tt .type} is the first item in {\it keylist}, and that node contains a child whose {\tt .type} is the second item in {\it keylist}, continuing in this fashion for all items in {\it keylist}, return the node matching the final item in {\it keylist}. Otherwise, return None.
+\item[\_\_getitem\_\_(key) {\it (node[key])}]: Return a list of all children of this node whose {\tt .type} matches {\it key}. Return an empty list if no children match. {\tt \_\_getitem\_\_()} is a Python ``magic method'' for (associative-)array-like element access: {\tt node.\_\_getitem\_\_(key)} is equivalent to {\tt node[key]}.
+\end{description}
+\caption{Node instance convenience functions}
+\label{fig:generator:node:functions}
+\end{figure}
+
+\section{Generator structure}
+The way your generator walks the IDL AST will obviously depend on the type of output you are trying to get, but it is probably reasonable to base your generator structure on the V4 generator.
+
+\section{Using V4 Generator Hooks}
+The V4 generator defines a number of functions which are called at various points in the output generation process. In the default generator, these functions do nothing. The Iguana debug generator uses a hook named {\tt hook\_function\_IDL4\_PUBLISH\_begin}, present in the service generator class, to output debug information every time the service is called. A list of service hooks and their function is described in figure \ref{fig:generator:service:hooks}. All hooks are called with no arguments (except ``self'').
+
+\begin{figure}
+\begin{tabularx}{\textwidth}{lX}
+\textbf{Hook name}&\textbf{Description}\\
+hook\_function\_before\_start& Called before both function and macro definitions.\\
+hook\_function\_before\_IDL4\_PUBLISH& Called immediately before the IDL4\_PUBLISH macro is defined.\\
+hook\_function\_IDL4\_PUBLISH\_begin& Called immediately after the IDL4\_PUBLISH macro definition and after any variable declarations.\\
+hook\_function\_before\_main\_func& Called immediately before the service reply function.\\
+hook\_function\_main\_func\_after\_decl& Called immediately after the service reply function definition and after any variable declarations.\\
+\end{tabularx}
+\caption{V4 Generator Service Hooks}
+\label{fig:generator:service:hooks}
+\end{figure}
+
+\section{Adding generator hooks}
+Generator hooks may be added from two places: from the V4 generator, or from a generator template.
+
+\subsection{Adding generator hooks from the V4 generator}
+This method is slightly simpler than modifying the template, but offers limited flexibility because hooks may only be defined at the boundaries of templates. Simply insert a call to the relevant function at the appropriate point in the V4 generator code. You must also, of course, insert the corresponding stub function into the V4 generator, so that overloading generators other than your own still function.
+
+\subsection{Adding generator hooks from a generator template}
+This method offers the greatest flexibility, because hooks may be defined anywhere. An example of calling a hook from within a template is given below. Obviously, you will need to create stubs in the generic code, as with the above method.
+\begin{verbatim}
+{{call_hook('hook_function_IDL4_PUBLISH_begin')}}
+\end{verbatim}

@@ -1,0 +1,12 @@
+# Stuff for testing
+Import('tests_env')
+tests_env.TestLibrary('test_libs_tracer', 'libs/tracer/', ['src/*.c', 'test/*.c'])
+
+# Stuff for regular Iguana build.
+Import("env")
+# glee: do not do this, since Mac OS X ld can't deal with empty sources.
+#lib = env.MyLibrary("trace", LIBS=[])
+lib = (["#libs/trace/include"], None, None, [], [])
+Return("lib")
+
+

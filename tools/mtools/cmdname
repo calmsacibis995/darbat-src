@@ -1,0 +1,25 @@
+floppyd - floppy daemon for remote access to floppy drive
+floppyd_installtest - tests whether floppyd is installed and running
+mattrib - change MSDOS file attribute flags
+mbadblocks - tests a floppy disk, and marks the bad blocks in the FAT
+mcd - change MSDOS directory
+mcat - dump raw disk image
+mcopy - copy MSDOS files to/from Unix
+mdel - delete an MSDOS file
+mdeltree - recursively delete an MSDOS directory and its contents
+mdir - display an MSDOS directory
+mdu - display the amount of space occupied by an MSDOS directory
+mformat - add an MSDOS filesystem to a low-level formatted floppy disk
+minfo - print the parameters of a MSDOS filesystem
+mkmanifest - makes list of file names and their DOS 8+3 equivalent
+mlabel - make an MSDOS volume label
+mmd - make an MSDOS subdirectory
+mmount - mount an MSDOS disk
+mpartition - partition an MSDOS hard disk
+mrd - remove an MSDOS subdirectory
+mmove - move or rename an MSDOS file or subdirectory
+mren - rename an existing MSDOS file
+mshowfat - shows FAT clusters allocated to file
+mtype - display contents of an MSDOS file
+mtoolstest - tests and displays the configuration
+mzip - change protection mode and eject disk on Zip/Jaz drive

@@ -1,0 +1,32 @@
+mtools package - README.os2
+---------------------------
+
+You need EMX distribution and headers from Warp Toolkit to build mtools in
+OS/2. Copy config.h.os2 to config.h, and use Makefile.os2 to build. Sample
+configuration file is provided in mtools.conf.os2.  Alternatively, you may
+use autoconf.  autoconf patched for EMX may be obtained from the following
+location: <URL:http://www.arrakis.es/~worm/acemx.htm>
+
+Hints on usage
+--------------
+
+Since 'a:file*.ex*' is a valid OS/2 file specifiction, you need to enclose
+wildcarded file specs in double quotes; else you will lose long names when
+copying from floppy (mtools will receive a wildcard already expanded, with
+short name, of course.)
+
+You can also access FAT partitions on hard disk(s), in read-only mode. Add
+a line like this to mtools.conf:
+
+	drive f: file="F:" nolock=1
+
+You can't have read-write access because OS/2 has it.
+
+TODO
+----
+
+XDF floppy support (one day...)
+
+
+Sergey Svishchev
+<svs@ropnet.ru>

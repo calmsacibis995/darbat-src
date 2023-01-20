@@ -1,0 +1,9 @@
+Import("*")
+cppdefines = []
+if (args.get("power", True)):
+    cppdefines.append(("ENABLE_PM_THREAD", 1))
+    
+obj = env.MyProgram("ig_timer",
+                    EXTRA_CPPDEFINES=[("TIMER_DRIVER", args["driver"])],
+                    LIBS=["c", "driver", args["driver"], "range_fl", "circular_buffer", "iguana", "l4", "gcc", "ll", "naming", "l4e", "mutex"])
+Return("obj")

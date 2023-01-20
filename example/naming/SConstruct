@@ -1,0 +1,6 @@
+Import("*")
+obj = env.KengeProgram("naming_example", LIBS=["c", "naming", "gcc", "range_fl", "circular_buffer", "iguana", "l4", "gcc", "ll", "naming", "l4e", "mutex"])
+
+env["EXPECT_TEST_DATA"] = [("Naming works!", None)]
+
+Return("obj")

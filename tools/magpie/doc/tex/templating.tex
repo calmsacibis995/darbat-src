@@ -1,0 +1,281 @@
+\chapter{Writing templates}
+\label{chapter:templating}
+\section{Introduction}
+Templates perform the final stage of code generation. A template is composed of code in the target language, interspersed with Python control commands. If you want to produce code for an API that Magpie doesn't support, to cater for a language other than C, or to optimise for a specific hardware platform, you should write your own templates.
+
+Although it is possible to make simple template changes without any knowledge of Python, having a basic understanding of the language will be helpful. A good way to learn Python is to take the official Python tutorial at \url{http://docs.python.org/tut/tut.html}.
+
+The following sections discuss the syntax of the templating language, and then work through a simple example. Don't worry about what the examples actually do for now.
+
+\section{Template specification}
+In Magpie, each output mode requires at least one template. This template, the {\em main} template, is responsible for producing output, possibly by running other templates. The set of templates required for a given output mode is described in a {\em target file}, stored in the {\texttt targets/} directory. A partial example of a target is given in Figure \ref{fig:templates:target:generic}. Note that the file from which this is taken, {\tt targets/idl4\_generic\_l4v4.target.py}, contains many more templates filenames than the one shown here.
+
+\subsection{Target inheritance}
+\label{templating:intro:inheritance}
+Targets may inherit from other targets. For example, the {\tt biguuid} target is designed to inherit from the {\tt generic} target. Inheritance is performed dynamically at run-time, and thus may be specified on the command line in Magpie's generic interface; see below.
+
+Template inheritance means that child targets can change the output of parent targets by replacing some of the templates used by the parent. This is explained in more detail in Section \ref{templating:run_fn}.
+
+\begin{figure}
+\begin{verbatim}
+Generator = 'v4'
+
+class Templates(OldTemplates):
+    MAPPING = 'CORBA C'
+
+    client_function_body = 'v4_generic/client_function_body.template.c'
+    client = 'v4_generic/main_client.template.h'
+
+    service = 'v4_generic/main_service.template.h'
+
+    preamble = 'v4_generic/preamble.template.c'
+    basic_includes = 'v4_generic/basic_includes.template.c'
+    imports = 'v4_generic/import.template.c'
+    
+    public = ['client', 'service']
+\end{verbatim}
+\caption{The L4 Generic target (abbreviated)}
+\label{fig:templates:target:generic}
+\end{figure}
+
+\subsection{The Magpie generic interface}
+When creating templates, it is useful not to have to write extra code to support command-line parsing. Instead, you can use Magpie's generic interface.
+
+As mentioned above, Magpie generates templates from one or more {\em targets}. Using the normal IDL4 emulation interface, the choice of which targets to use is made based on the chosen mapping and platform. For example, to produce generic client output, one might run {\tt magpidl4.py} like this:
+
+\begin{verbatim}
+$ ./magpidl4.py -p generic -c test/input/simple.idl4
+\end{verbatim}
+
+This is equivalent to the following command in Magpie's generic interface:
+
+\begin{verbatim}
+$ ./magpie.py --target=idl4_generic_l4v4 --output=client test/input/simple.idl4
+\end{verbatim}
+
+As you can see, the generic interface makes the choice of target explicit. The generic interface can also give you a list of all available targets using the {\tt --list-targets} option:
+
+\begin{verbatim}
+$ ./magpie.py --list-targets
+Available targets:
+ * corba_tester
+ * cplusplus_modifier
+ * idl4_generic_l4v4
+ * idl4_generic_debug_l4v4
+ * idl4_arm_biguuid_l4v4
+ * idl4_generic_biguuid_l4v4
+\end{verbatim}
+
+This list of targets is simply {\tt targets/*.target.py}.
+
+You may also see a list of output modes for a given target, using the {\tt --list-outputs option}:
+
+\begin{verbatim}
+$ ./magpie.py --target idl4_generic_l4v4 --list-outputs
+Public outputs for target list idl4_generic_l4v4:
+ * client
+ * service
+ * servicetemplate
+$
+\end{verbatim}
+
+This list is equivalent to the list of {\tt public} templates in the target file. 
+
+\subsection{The {\tt target} file}
+As discussed above, target files, such as the one shown in Figure \ref{fig:templates:target:generic}, describe all output-specific templates. There are only a few rules for writing template files:
+
+\begin{itemize}
+\item Targets must include a {\tt Generator} line.
+\item All template filenames must be within a class called {\tt Templates}, and this class must inherit from a class called {\tt OldTemplates}.
+\item The {\em Templates} class must define a class variable called {\tt public} which lists which templates may be considered {\em main} templates (ie, those which can be used from the command line of Magpie's generic interface). The {\tt public} variable is not necessary if the target is designed to inherit from a target which defines {\tt public}.
+\end{itemize}
+
+\section{Templating language syntax}
+Templates are written in the target language - C, for example. Control sequences embedded within the template cause the template engine to go into Python mode. 
+
+By default, the templating engine is in ``copy'' mode. This means that any characters seen in the template will be copied directly to the output stream.\footnote{Technically, templates are compiled into Python code before execution, but the idea is the same.}
+
+If the templating engine encounters a control sequence while in copy mode, it enters Python mode. The various control sequences that trigger transitions into Python mode, and their effects, are described below.
+
+\subsection{/*-?\textit{expression}-*/ : Expression evaluation}
+The expression described by \textit{expression} is evaluated, using the output dictionary as the global namespace. The result is converted to a string, and inserted into the output stream. Examples:
+
+\begin{verbatim}
+/*-?function.get_name()-*/
+\end{verbatim}
+The function {\tt function.get\_name()} is executed, and its result is inserted into the output stream.
+\begin{verbatim}
+/*-?[', '.join(function.get_params())]-*/
+\end{verbatim}
+Each item in the iterable result of the function \texttt{function.get\_params()} is joined together using a comma, and the resulting string is inserted.
+
+\subsection{/*-\textit{code}-*/ : Code execution}
+The Python code \textit{code} is executed, with the output dictionary as the global namespace. Nothing is inserted into the output stream. Note that the code may span multiple lines, and include any valid Python. Examples: 
+
+\begin{verbatim}
+/*-REGISTERS = [1,2,3,4]-*/
+\end{verbatim}
+Create a list named \texttt{REGISTERS} in the output dictionary.
+\begin{verbatim}
+/*-_out_params = [param for param in function.get_params()\
+    if param['direction'] in ['out', 'inout'] and param['flags'] == []]-*/
+\end{verbatim}
+Create a list named ``\_out\_params'' in the output dictionary, consisting of all function parameters which have a direction of ``out'' or ``inout'' and no special flags. 
+\begin{verbatim}
+/*-
+def succ(x):
+    return x+1
+-*/
+/*-?succ(succ(succ(0)))-*/
+\end{verbatim}
+Defines a small function, and then inserts its result (``3'', in this case) into the output stream.
+
+\subsection{/*LOOP \textit{iterable}*/\textit{template}/*ENDLOOP*/ : Looping}
+When a loop construct is encountered, the iterable specified in \textit{iterable} is consumed. For each item, the variable \texttt{LOOPITEM} is set to the current item, and the template \textit{template} is evaluated. Example:
+
+\begin{verbatim}
+/*LOOP [1, 2, 3]*/I am #/*-?LOOPITEM-*/;/*ENDLOOP*/
+\end{verbatim}
+Inserts the text ``I am \#1; I am \#2; I am \#3; '' into the output stream.
+
+\subsubsection{Extended loop syntax}
+Sometimes it is useful to use a loop variable with a name other than {\tt LOOPITEM} (for example, if you wish to nest loops). In this case, you may use an extended loop syntax which specifies the loop variable name: /*LOOP~{\textit~varname}~=~{\textit~iterable}*/\textit{template}/*ENDLOOP*/.
+
+A simple example of this extended syntax is given below.
+\begin{verbatim}
+/*LOOP outer = ['Water', 'Salsa']*//*LOOP inner = ['buffalo', 'shark']*/Mozilla /*-?outer-*//*-?inner-*/
+/*ENDLOOP*//*ENDLOOP*/
+\end{verbatim}
+The above template inserts the following text into the output stream.
+\begin{verbatim}
+Mozilla Waterbuffalo
+Mozilla Watershark
+Mozilla Salsabuffalo
+Mozilla Salsashark
+\end{verbatim}
+
+\subsection{/*-if \textit{expression}*/\textit{template} /*fi-*/ : Simple conditional output}
+Evaluates \textit{template}, and inserts it into the output stream only if \textit{expression} is true.
+
+\begin{verbatim}
+/*-if function.return_type != 'void'-*/ // non-void function
+    /*-?function.return_type-*//*fi-*/
+\end{verbatim}
+Inserts the text ``// non-void function '' followed by the value of \texttt{function.return\_type} into the output stream, if the variable \texttt{function.return\_type} does not equal the string ``void'' (the second line has been split for this document only).
+
+\section{Running templates from templates: the {\tt run()} function}
+\label{templating:run_fn}
+The {\tt run()} function allows templates to executes other templates. The preferred way to do this is by referencing the target; this allows target inheritance to work (see Section \ref{templating:intro:inheritance} for more information on target inheritance).
+
+The {\em target} object is made available to templates through the global variable {\tt target}. An example of its use is given in Figure \ref{fig:templating:runfn}.
+
+\begin{figure}
+\begin{verbatim}
+/*-run(templates.get('preamble'))-*/
+#define MAGPIE_BYTES_PER_WORD (sizeof(L4_Word_t))
+
+/*-run(templates.get('basic_includes'))-*/
+/*-run(templates.get('imports'))-*/
+\end{verbatim}
+\caption{output/templates/v4\_generic/main\_client.template.h (abbreviated)}
+\label{fig:templating:runfn}
+\end{figure}
+
+
+
+\section{Alternate format for templates}
+The template format was designed so that templates would show as comments in a syntax-highlighting editor set to ``C'' syntax mode. Unfortunately C does not allow nested comments, so templates within other template constructs are highlighted as errors in C syntax-highlighting editors. In order to avoid these spurious error notifications, you may use an alternate syntax for nested template constructs, described in figure \ref{fig:templating:syntaxsummary}.
+
+\begin{figure}
+\begin{tabularx}{\textwidth}{ll}
+\textbf{Comment style}&\textbf{Alternate style}\\
+/*-?\textit{expression}-*/ & \{*-?\textit{expression}-*\}\\
+/*-\textit{code}-*/ & \{*-\textit{code}-*\}\\
+/*-if \textit{expression}*/\textit{template}/*fi-*/ & \{*-if \textit{expression} *\}\textit{template}\{*fi-*\}\\
+/*LOOP \textit{iterable}*/\newline
+\textit{template}\newline
+/*ENDLOOP*/
+& \{*LOOP \textit{iterable}*\}\newline
+\textit{template}\newline\{*ENDLOOP*\}\\
+\end{tabularx}
+\caption{Template syntax}
+\label{fig:templating:syntaxsummary}
+\end{figure}
+
+\section{The templating global scope}
+\label{templating.default.scope}
+Before templates to do useful work, they must be supplied with some data describing the code they are generating. This is accomplished by placing relevant data into the global scope of the template. A template scope is simply a Python dictionary, so sometimes ``templating global scope'' and ``templating dictionary'' are used interchangeably.
+
+\subsection{Templating dictionary summary}
+The templating dictionary contains the following top-level items:
+
+\begin{tabularx}{\textwidth}{l}
+generator\\
+templates\\
+out\\
+\end{tabularx}
+
+The final item, \texttt{out}, is the output stream, which may be directly written to from within Python mode using \texttt{out.write}. Normally, you should not need to do this, but it is sometimes useful --- in particular, when generating output from within a Python function defined in a template.
+
+The first item is the generator chosen for this template. Templates do not have direct access to the IDL AST. Instead, to simplify them, templates must always access the IDL AST using functions defined in a generator. The standard generator for L4 contains a number of functions, described below.
+
+\begin{tabularx}{\textwidth}{lX}
+\textbf{Function}&\textbf{Description}\\
+\hline
+get\_output\_filename()&Returns a string naming the destination file as specified on the command line\\
+get\_ifdefable\_filename()&Returns a mangled version of the destination file name, suitable for using in preprocessor {\tt \#ifdef} statements\\
+get\_idl\_filename()&Returns a string naming the source IDL file as specified on the command line\\
+get\_imports()&Return a list of strings naming files imported by the AST\\
+get\_constants()&Return a list of 2-tuples of {\tt(constant\_name, constant\_value)}, one for each constant defined in the IDL file\\
+get\_interfaces()&Return a list of {\tt V4Interface} class instances, one per AST interface
+\end{tabularx}
+
+\subsubsection{The {\tt V4Interface} class}
+
+\begin{tabularx}{\textwidth}{lX}
+\textbf{Variable}&\textbf{Description}\\
+\hline
+get\_name()&Returns the name of this interface\\
+get\_ifdef\_name()&Return a mangled version of the interface name, suitable for using in preprocessor {\tt \#ifdef} statements\\
+get\_annotations()&Returns a dictionary of interface annotations. The annotations are returned in the form {\tt \{name: [argument\_1, ...]\}} \\
+get\_uuid()&Returns the UUID of this interface. This is equivalent to {\tt get\_annotations()['uuid'][0]}\\
+get\_fid\_mask()&Returns a function ID mask, used in service templates. See the documentation in {\tt generator/v4generator.py} for details\\
+get\_functions()&Returns a list of {\tt V4Function} class instances, one per function in this interface.\\
+get\_function\_names()&Return a list of function names. This is a shortcut for [function.get\_name() for function in get\_functions()
+\end{tabularx}
+
+\subsubsection{The {\tt V4Function} class}
+\begin{tabularx}{\textwidth}{lX}
+\textbf{Variable}&\textbf{Description}\\
+\hline
+get\_name()&Returns the function name. The V4 generator prepends the interface name to this string\\
+get\_name\_raw()&Returns the function name as specified in the AST\\
+get\_ifdef\_name()&Returns a mangled version of the function name, suitable for using in preprocessor {\tt \#ifdef} statements\\
+get\_return\_type()&Returns the function's return type\\
+get\_params()&Returns a list of function params as SimpleParam instances. See below for details\\
+get\_params\_in()&Returns a list of SimpleParam instances for input parameters only\\
+get\_params\_out()&Returns a list of SimpleParam instances for output parameters only\\
+get\_param\_return()&Returns a SimpleParam for the return value\\
+get\_fpages\_count()&Returns the number of fpages this function returns\\
+get\_is\_pagefault()&Returns True if this function is a pagefault handler, False otherwise\\
+get\_num\_untyped\_output\_words()&Returns the number of words this function returns\\
+get\_num\_untyped\_input\_words()&Returns the number of words this function expects\\
+get\_number()&Return the function number. Functions numbers are unique per-interface numbers. Function numbers start at 0 for the first function in the interface and increase monotonically\\
+get\_priv\_param\_name()&Return the name of the parameter representing privileges for a pagefault-handling service template function
+\end{tabularx}
+
+\subsubsection{Simplified params}
+The obvious way to pass parameter information to templates would be simply to pass the abstract syntax tree defining the parameter. However, this is not a reasonable solution - the AST may be derived from C, C++, or IDL, and all three languages have multiple methods of declaring variables, which are difficult to parse. Instead, Magpie generates its own types, and passes a simple dictionary for each variable. 
+
+A simplified param is a dictionary containing the following items.
+
+\begin{tabularx}{\textwidth}{lX}
+\textbf{Variable}&\textbf{Description}\\
+\hline
+indirection&Zero or more asterisks indicating the level of indirection of this variable\\
+name&The parameter name\\
+typename&The name of the parameter's type\\
+direction&``in'', ``out'', or ``inout''\\
+idltype&A type instance. Types are explained in another section.\\
+\end{tabularx}
+

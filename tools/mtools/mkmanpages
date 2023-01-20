@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# extracts the manpage for a given command out of a texinfo doc
+unset LANG
+
+date=`date +%d%b%y`
+package="mtools-"`grep version patchlevel.c | sed 's/^.*"\(.*\)";/\1/'`
+
+infile=/tmp/infile.$$
+
+extract()
+{
+  echo extracting $name
+  command=$1
+  outfile=`echo $command | tr '[A-Z]' '[a-z]'`.1
+  
+  echo \'\\\" t >>$outfile
+  echo .TH\ $command\ 1\ \"$date\" $package >$outfile
+  echo .SH Name >>$outfile
+  grep -i $command cmdname >>$outfile
+  #echo ".SH Description" >>$outfile
+  
+  cat man-warning.texi mtools.texi man-warning-end.texi |
+  sed \
+   -e "/^@c skipskipskip/,/^@node $command/d" \
+   -e "/^@node [^,]*, [^,]*, $command, Commands$/,/^@bye/d" \
+   -e "/^@node [^,]*, [^,]*, Commands/,/^@bye/d" \
+   -e 's/^@section/@chapter/' \
+   -e 's/^@subs/@s/' \
+   -e 's/^@chapter.*$/@chapter Description/' \
+   -e 's/^@section/@chapter/' \
+   -e 's/^@subs/@s/' \
+   -e 's/^@c xMANoptions/@chapter Options/' \
+   -e "s/^@c MAN/@MAN/"  |
+  texi2roff -ma  |
+  sed -f strip-pp.sed >>$outfile
+#  echo ".SH See Also" >>$outfile
+#  echo "Mtools' texinfo doc" >>$outfile
+}
+
+
+for name in `cut -f1 -d\  cmdname` ; do
+  extract $name
+done
+
+echo \'\\\" t >mtools.1
+echo .TH mtools.1 3 \"$date\" $package >>mtools.1
+echo .SH Name >>mtools.1
+echo "mtools - utilities to access DOS disks in Unix." >>mtools.1
+cat mtools.texi |
+	sed \
+	 -e "1,/^@c MANstart 1/d" \
+	 -e '/^@c MANskip 1/,/^@c MANend-skip 1/d' \
+	 -e '/^@c MANend-skip 5/d' \
+	 -e '/^@c MANend 5/d' \
+	 -e "s/^@c MAN/@MAN/"  |
+	texi2roff -ma  |
+	sed -f strip-pp.sed >>mtools.1
+
+echo .SH See also >>mtools.1
+echo floppyd_installtest >>mtools.1
+echo mattrib >>mtools.1
+echo mbadblocks >>mtools.1
+echo mcd >>mtools.1
+echo mcopy >>mtools.1
+echo mdel >>mtools.1
+echo mdeltree >>mtools.1
+echo mdir >>mtools.1
+echo mdu >>mtools.1
+echo mformat >>mtools.1
+echo minfo >>mtools.1
+echo mkmanifest >>mtools.1
+echo mlabel >>mtools.1
+echo mmd >>mtools.1
+echo mmount >>mtools.1
+echo mmove >>mtools.1
+echo mrd >>mtools.1
+echo mren >>mtools.1
+echo mtoolstest >>mtools.1
+echo mtype >>mtools.1
+
+echo \'\\\" t >mtools.5
+echo .TH mtools.1 3 \"$date\" "MTOOLS" "MTOOLS" >>mtools.5
+echo .SH Name >>mtools.5
+echo "mtools.conf - mtools configuration files" >>mtools.5
+cat mtools.texi |
+	sed \
+		-e '1d' \
+		-e '/^@c MANskip 5/,/^@c MANend-skip 5/d' \
+	        -e '/^@c MANend-skip 1/d' \
+	        -e '/^@c MANskip 1/d' \
+		-e "s/^@c MAN/@MAN/"  |
+	texi2roff -ma  |
+	sed -f strip-pp.sed |
+	sed 's/\.SS Description/.SH Description/' >>mtools.5
+
+echo .SH See also >>mtools.5
+echo mtools >>mtools.5
